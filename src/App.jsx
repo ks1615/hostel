@@ -1,0 +1,467 @@
+import React, { useState, useEffect } from 'react';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import RoomGrid from './components/RoomGrid';
+import RoomDetailModal from './components/RoomDetailModal';
+import RoomFormModal from './components/RoomFormModal';
+import ResidentModal from './components/ResidentModal';
+import ResidentsList from './components/ResidentsList';
+import PaymentsTracker from './components/PaymentsTracker';
+import MaintenanceTracker from './components/MaintenanceTracker';
+import NoticeBoard from './components/NoticeBoard';
+import AnalyticsView from './components/AnalyticsView';
+import DataStorageManager from './components/DataStorageManager';
+import Toast from './components/Toast';
+
+import { loadData, saveData, resetData, exportDataJSON } from './utils/storage';
+
+export default function App() {
+  const [data, setData] = useState(() => loadData());
+  const [activeTab, setActiveTab] = useState('rooms');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [theme, setTheme] = useState(() => localStorage.getItem('STARLIGHT_THEME') || 'dark');
+  const [toast, setToast] = useState(null);
+
+  // Modals state
+  const [selectedRoomForView, setSelectedRoomForView] = useState(null);
+  const [roomFormModalState, setRoomFormModalState] = useState({ isOpen: false, roomToEdit: null });
+  const [residentModalState, setResidentModalState] = useState({ 
+    isOpen: false, 
+    preSelectedRoom: null, 
+    preSelectedBed: null, 
+    residentToEdit: null 
+  });
+
+  // Sync dataset changes to localStorage
+  useEffect(() => {
+    saveData(data);
+  }, [data]);
+
+  // Apply Theme attribute
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('STARLIGHT_THEME', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  // Hidden File input trigger for header
+  const fileInputRef = React.useRef(null);
+
+  const handleHeaderImportTrigger = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleHeaderFileImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        if (parsed && (parsed.rooms || parsed.residents)) {
+          handleRestoreData(parsed);
+          showToast('Database imported successfully!', 'success');
+        } else {
+          alert('Invalid backup file structure.');
+        }
+      } catch (err) {
+        alert('Failed to parse JSON backup.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  // Data operations: Rooms
+  const handleSaveRoom = (roomData) => {
+    setData(prev => {
+      const existsIndex = prev.rooms.findIndex(r => r.id === roomData.id);
+      let updatedRooms = [...prev.rooms];
+
+      if (existsIndex >= 0) {
+        // Keep existing beds occupant references if capacity unchanged
+        const existingBeds = prev.rooms[existsIndex].beds || [];
+        const newBeds = Array.from({ length: roomData.capacity }, (_, i) => {
+          const bedNo = i + 1;
+          const match = existingBeds.find(b => b.bedNo === bedNo);
+          return match || { bedNo, residentId: null };
+        });
+
+        updatedRooms[existsIndex] = { ...roomData, beds: newBeds };
+      } else {
+        // New room: initialize empty beds
+        const newBeds = Array.from({ length: roomData.capacity }, (_, i) => ({
+          bedNo: i + 1,
+          residentId: null
+        }));
+        updatedRooms.push({ ...roomData, beds: newBeds });
+      }
+
+      return { ...prev, rooms: updatedRooms };
+    });
+
+    setRoomFormModalState({ isOpen: false, roomToEdit: null });
+    showToast(`Room ${roomData.number} saved successfully!`);
+  };
+
+  const handleDeleteRoom = (roomId) => {
+    setData(prev => {
+      const roomToDelete = prev.rooms.find(r => r.id === roomId);
+      const updatedRooms = prev.rooms.filter(r => r.id !== roomId);
+      const updatedResidents = prev.residents.filter(r => r.roomId !== roomId);
+
+      return {
+        ...prev,
+        rooms: updatedRooms,
+        residents: updatedResidents
+      };
+    });
+
+    if (selectedRoomForView && selectedRoomForView.id === roomId) {
+      setSelectedRoomForView(null);
+    }
+
+    showToast(`Room deleted successfully.`);
+  };
+
+  // Residents
+  const handleSaveResident = (residentData) => {
+    setData(prev => {
+      let updatedResidents = [...prev.residents];
+      const resIndex = updatedResidents.findIndex(r => r.id === residentData.id);
+
+      if (resIndex >= 0) {
+        updatedResidents[resIndex] = residentData;
+      } else {
+        updatedResidents.push(residentData);
+      }
+
+      // Update room bed allocation
+      const updatedRooms = prev.rooms.map(room => {
+        if (room.id === residentData.roomId) {
+          const updatedBeds = room.beds.map(bed => {
+            if (bed.bedNo === residentData.bedNo) {
+              return { ...bed, residentId: residentData.id };
+            }
+            return bed;
+          });
+          const occCount = updatedBeds.filter(b => b.residentId).length;
+          const status = occCount >= room.capacity ? 'Full' : room.status === 'Maintenance' ? 'Maintenance' : 'Occupied';
+          return { ...room, beds: updatedBeds, status };
+        }
+        return room;
+      });
+
+      return {
+        ...prev,
+        rooms: updatedRooms,
+        residents: updatedResidents
+      };
+    });
+
+    setResidentModalState({ isOpen: false, preSelectedRoom: null, preSelectedBed: null, residentToEdit: null });
+    showToast(`Resident ${residentData.name} checked in!`);
+  };
+
+  const handleVacateBed = (roomId, bedNo, residentId) => {
+    setData(prev => {
+      const updatedRooms = prev.rooms.map(room => {
+        if (room.id === roomId) {
+          const updatedBeds = room.beds.map(bed => {
+            if (bed.bedNo === bedNo) {
+              return { ...bed, residentId: null };
+            }
+            return bed;
+          });
+          const occCount = updatedBeds.filter(b => b.residentId).length;
+          const status = occCount === 0 ? 'Available' : 'Occupied';
+          return { ...room, beds: updatedBeds, status };
+        }
+        return room;
+      });
+
+      const updatedResidents = prev.residents.filter(r => r.id !== residentId);
+
+      return {
+        ...prev,
+        rooms: updatedRooms,
+        residents: updatedResidents
+      };
+    });
+
+    if (selectedRoomForView && selectedRoomForView.id === roomId) {
+      setSelectedRoomForView(prev => ({
+        ...prev,
+        beds: prev.beds.map(b => b.bedNo === bedNo ? { ...b, residentId: null } : b)
+      }));
+    }
+
+    showToast('Resident check-out completed. Bed is now vacant.');
+  };
+
+  // Payments
+  const handleSavePayment = (paymentData) => {
+    setData(prev => {
+      const updatedPayments = [paymentData, ...prev.payments];
+      // Update resident status to Paid
+      const updatedResidents = prev.residents.map(r => {
+        if (r.id === paymentData.residentId) {
+          return { ...r, rentStatus: 'Paid' };
+        }
+        return r;
+      });
+
+      return {
+        ...prev,
+        payments: updatedPayments,
+        residents: updatedResidents
+      };
+    });
+
+    showToast(`Payment of ₹${paymentData.amount.toLocaleString()} recorded!`);
+  };
+
+  // Maintenance
+  const handleSaveTicket = (ticketData) => {
+    setData(prev => ({
+      ...prev,
+      maintenance: [ticketData, ...prev.maintenance]
+    }));
+    showToast('Maintenance request ticket created!');
+  };
+
+  const handleUpdateTicketStatus = (ticketId, newStatus) => {
+    setData(prev => ({
+      ...prev,
+      maintenance: prev.maintenance.map(m => m.id === ticketId ? { ...m, status: newStatus } : m)
+    }));
+    showToast(`Ticket status updated to ${newStatus}`);
+  };
+
+  // Notices
+  const handleSaveNotice = (noticeData) => {
+    setData(prev => {
+      const idx = (prev.notices || []).findIndex(n => n.id === noticeData.id);
+      let updatedNotices = [...(prev.notices || [])];
+      if (idx >= 0) {
+        updatedNotices[idx] = noticeData;
+      } else {
+        updatedNotices.unshift(noticeData);
+      }
+      return { ...prev, notices: updatedNotices };
+    });
+    showToast('Hostel announcement published!');
+  };
+
+  const handleDeleteNotice = (noticeId) => {
+    setData(prev => ({
+      ...prev,
+      notices: (prev.notices || []).filter(n => n.id !== noticeId)
+    }));
+    showToast('Notice deleted.');
+  };
+
+  const handleTogglePinNotice = (noticeId) => {
+    setData(prev => ({
+      ...prev,
+      notices: (prev.notices || []).map(n => n.id === noticeId ? { ...n, isPinned: !n.isPinned } : n)
+    }));
+  };
+
+  // Storage
+  const handleRestoreData = (newData) => {
+    setData({
+      rooms: newData.rooms || [],
+      residents: newData.residents || [],
+      payments: newData.payments || [],
+      maintenance: newData.maintenance || [],
+      notices: newData.notices || [],
+      upiConfig: newData.upiConfig || data.upiConfig,
+      lastUpdated: new Date().toISOString()
+    });
+  };
+
+  const handleResetData = () => {
+    const res = resetData();
+    if (res) {
+      setData(res);
+    }
+  };
+
+  // Computations for sidebar badge counts
+  const pendingPaymentsCount = data.residents.filter(r => r.rentStatus !== 'Paid').length;
+  const openMaintenanceCount = data.maintenance.filter(m => m.status !== 'Resolved').length;
+  const noticeCount = (data.notices || []).length;
+
+  return (
+    <div className="app-container">
+      <input 
+        type="file" 
+        accept=".json" 
+        ref={fileInputRef} 
+        style={{ display: 'none' }}
+        onChange={handleHeaderFileImport}
+      />
+
+      <Sidebar 
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        roomCount={data.rooms.length}
+        residentCount={data.residents.length}
+        pendingPaymentsCount={pendingPaymentsCount}
+        openMaintenanceCount={openMaintenanceCount}
+        noticeCount={noticeCount}
+      />
+
+      <main className="main-content">
+        <Header 
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          onExport={() => {
+            exportDataJSON(data);
+            showToast('JSON Backup downloaded!');
+          }}
+          onImportTrigger={handleHeaderImportTrigger}
+          onOpenAddRoom={() => setRoomFormModalState({ isOpen: true, roomToEdit: null })}
+        />
+
+        <div className="page-wrapper">
+          {activeTab === 'rooms' && (
+            <RoomGrid 
+              rooms={data.rooms}
+              residents={data.residents}
+              searchTerm={searchTerm}
+              onViewRoom={(room) => setSelectedRoomForView(room)}
+              onCheckInResident={(room, bedNo) => {
+                setResidentModalState({
+                  isOpen: true,
+                  preSelectedRoom: room,
+                  preSelectedBed: bedNo || null,
+                  residentToEdit: null
+                });
+              }}
+              onEditRoom={(room) => setRoomFormModalState({ isOpen: true, roomToEdit: room })}
+              onDeleteRoom={handleDeleteRoom}
+            />
+          )}
+
+          {activeTab === 'notices' && (
+            <NoticeBoard 
+              notices={data.notices || []}
+              onSaveNotice={handleSaveNotice}
+              onDeleteNotice={handleDeleteNotice}
+              onTogglePinNotice={handleTogglePinNotice}
+            />
+          )}
+
+          {activeTab === 'residents' && (
+            <ResidentsList 
+              residents={data.residents}
+              rooms={data.rooms}
+              searchTerm={searchTerm}
+              onOpenCheckIn={() => setResidentModalState({ isOpen: true, preSelectedRoom: null, preSelectedBed: null, residentToEdit: null })}
+              onEditResident={(res) => setResidentModalState({ isOpen: true, preSelectedRoom: null, preSelectedBed: null, residentToEdit: res })}
+              onVacateResident={handleVacateBed}
+              onRecordPayment={(res) => {
+                setActiveTab('payments');
+              }}
+            />
+          )}
+
+          {activeTab === 'payments' && (
+            <PaymentsTracker 
+              payments={data.payments}
+              residents={data.residents}
+              upiConfig={data.upiConfig}
+              onSavePayment={handleSavePayment}
+              showToast={showToast}
+            />
+          )}
+
+          {activeTab === 'maintenance' && (
+            <MaintenanceTracker 
+              maintenance={data.maintenance}
+              rooms={data.rooms}
+              onSaveTicket={handleSaveTicket}
+              onUpdateTicketStatus={handleUpdateTicketStatus}
+            />
+          )}
+
+          {activeTab === 'analytics' && (
+            <AnalyticsView 
+              rooms={data.rooms}
+              residents={data.residents}
+              payments={data.payments}
+            />
+          )}
+
+          {activeTab === 'storage' && (
+            <DataStorageManager 
+              appData={data}
+              onRestoreData={handleRestoreData}
+              onResetData={handleResetData}
+              showToast={showToast}
+            />
+          )}
+        </div>
+      </main>
+
+      {/* Modals */}
+      {selectedRoomForView && (
+        <RoomDetailModal 
+          room={selectedRoomForView}
+          residents={data.residents}
+          onClose={() => setSelectedRoomForView(null)}
+          onVacateBed={handleVacateBed}
+          onCheckInResident={(room, bedNo) => {
+            setResidentModalState({
+              isOpen: true,
+              preSelectedRoom: room,
+              preSelectedBed: bedNo,
+              residentToEdit: null
+            });
+          }}
+          onOpenMaintenance={(room) => {
+            setActiveTab('maintenance');
+          }}
+          onEditRoom={(room) => setRoomFormModalState({ isOpen: true, roomToEdit: room })}
+          onDeleteRoom={handleDeleteRoom}
+        />
+      )}
+
+      {roomFormModalState.isOpen && (
+        <RoomFormModal 
+          roomToEdit={roomFormModalState.roomToEdit}
+          onClose={() => setRoomFormModalState({ isOpen: false, roomToEdit: null })}
+          onSave={handleSaveRoom}
+          onDelete={handleDeleteRoom}
+        />
+      )}
+
+      {residentModalState.isOpen && (
+        <ResidentModal 
+          rooms={data.rooms}
+          preSelectedRoom={residentModalState.preSelectedRoom}
+          preSelectedBed={residentModalState.preSelectedBed}
+          residentToEdit={residentModalState.residentToEdit}
+          onClose={() => setResidentModalState({ isOpen: false, preSelectedRoom: null, preSelectedBed: null, residentToEdit: null })}
+          onSave={handleSaveResident}
+        />
+      )}
+
+      <Toast toast={toast} onClose={() => setToast(null)} />
+    </div>
+  );
+}
