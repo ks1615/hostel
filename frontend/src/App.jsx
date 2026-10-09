@@ -12,6 +12,8 @@ import NoticeBoard from './components/NoticeBoard';
 import AnalyticsView from './components/AnalyticsView';
 import DataStorageManager from './components/DataStorageManager';
 import Toast from './components/Toast';
+import LoginModal from './components/LoginModal';
+import ResidentDashboard from './components/ResidentDashboard';
 
 import { loadData, saveData, resetData, exportDataJSON } from './utils/storage';
 
@@ -21,6 +23,17 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState(() => localStorage.getItem('STARLIGHT_THEME') || 'dark');
   const [toast, setToast] = useState(null);
+
+  // Authentication State
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('SAKHARE_CURRENT_USER');
+      return saved ? JSON.parse(saved) : { role: 'owner', name: 'Owner (Sakhare Plot Management)' };
+    } catch {
+      return { role: 'owner', name: 'Owner (Sakhare Plot Management)' };
+    }
+  });
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Modals state
   const [selectedRoomForView, setSelectedRoomForView] = useState(null);
@@ -37,6 +50,15 @@ export default function App() {
     saveData(data);
   }, [data]);
 
+  // Sync authentication state to localStorage
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('SAKHARE_CURRENT_USER', JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem('SAKHARE_CURRENT_USER');
+    }
+  }, [currentUser]);
+
   // Apply Theme attribute
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -50,6 +72,18 @@ export default function App() {
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
+  };
+
+  const handleLogin = (userObj) => {
+    setCurrentUser(userObj);
+    setShowLoginModal(false);
+    showToast(`Logged in successfully as ${userObj.name}!`);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setShowLoginModal(true);
+    showToast('Logged out.');
   };
 
   // Hidden File input trigger for header
@@ -116,7 +150,6 @@ export default function App() {
 
   const handleDeleteRoom = (roomId) => {
     setData(prev => {
-      const roomToDelete = prev.rooms.find(r => r.id === roomId);
       const updatedRooms = prev.rooms.filter(r => r.id !== roomId);
       const updatedResidents = prev.residents.filter(r => r.roomId !== roomId);
 
@@ -303,6 +336,9 @@ export default function App() {
   const openMaintenanceCount = data.maintenance.filter(m => m.status !== 'Resolved').length;
   const noticeCount = (data.notices || []).length;
 
+  const isOwner = currentUser?.role === 'owner';
+  const isMember = currentUser?.role === 'member';
+
   return (
     <div className="app-container">
       <input 
@@ -325,6 +361,7 @@ export default function App() {
 
       <main className="main-content">
         <Header 
+          currentUser={currentUser}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           theme={theme}
@@ -335,88 +372,120 @@ export default function App() {
           }}
           onImportTrigger={handleHeaderImportTrigger}
           onOpenAddRoom={() => setRoomFormModalState({ isOpen: true, roomToEdit: null })}
+          onOpenLogin={() => setShowLoginModal(true)}
+          onLogout={handleLogout}
         />
 
         <div className="page-wrapper">
-          {activeTab === 'rooms' && (
-            <RoomGrid 
+          {/* Hostel Member View */}
+          {isMember && (
+            <ResidentDashboard 
+              currentUser={currentUser}
               rooms={data.rooms}
               residents={data.residents}
-              searchTerm={searchTerm}
-              onViewRoom={(room) => setSelectedRoomForView(room)}
-              onCheckInResident={(room, bedNo) => {
-                setResidentModalState({
-                  isOpen: true,
-                  preSelectedRoom: room,
-                  preSelectedBed: bedNo || null,
-                  residentToEdit: null
-                });
-              }}
-              onEditRoom={(room) => setRoomFormModalState({ isOpen: true, roomToEdit: room })}
-              onDeleteRoom={handleDeleteRoom}
-            />
-          )}
-
-          {activeTab === 'notices' && (
-            <NoticeBoard 
-              notices={data.notices || []}
-              onSaveNotice={handleSaveNotice}
-              onDeleteNotice={handleDeleteNotice}
-              onTogglePinNotice={handleTogglePinNotice}
-            />
-          )}
-
-          {activeTab === 'residents' && (
-            <ResidentsList 
-              residents={data.residents}
-              rooms={data.rooms}
-              searchTerm={searchTerm}
-              onOpenCheckIn={() => setResidentModalState({ isOpen: true, preSelectedRoom: null, preSelectedBed: null, residentToEdit: null })}
-              onEditResident={(res) => setResidentModalState({ isOpen: true, preSelectedRoom: null, preSelectedBed: null, residentToEdit: res })}
-              onVacateResident={handleVacateBed}
-              onRecordPayment={(res) => {
-                setActiveTab('payments');
-              }}
-            />
-          )}
-
-          {activeTab === 'payments' && (
-            <PaymentsTracker 
               payments={data.payments}
-              residents={data.residents}
+              maintenance={data.maintenance}
+              notices={data.notices}
               upiConfig={data.upiConfig}
               onSavePayment={handleSavePayment}
-              showToast={showToast}
-            />
-          )}
-
-          {activeTab === 'maintenance' && (
-            <MaintenanceTracker 
-              maintenance={data.maintenance}
-              rooms={data.rooms}
               onSaveTicket={handleSaveTicket}
-              onUpdateTicketStatus={handleUpdateTicketStatus}
-            />
-          )}
-
-          {activeTab === 'analytics' && (
-            <AnalyticsView 
-              rooms={data.rooms}
-              residents={data.residents}
-              payments={data.payments}
-            />
-          )}
-
-          {activeTab === 'storage' && (
-            <DataStorageManager 
-              appData={data}
-              onRestoreData={handleRestoreData}
-              onResetData={handleResetData}
               showToast={showToast}
             />
+          )}
+
+          {/* Owner / Admin View Tabs */}
+          {isOwner && (
+            <>
+              {activeTab === 'rooms' && (
+                <RoomGrid 
+                  rooms={data.rooms}
+                  residents={data.residents}
+                  searchTerm={searchTerm}
+                  onViewRoom={(room) => setSelectedRoomForView(room)}
+                  onCheckInResident={(room, bedNo) => {
+                    setResidentModalState({
+                      isOpen: true,
+                      preSelectedRoom: room,
+                      preSelectedBed: bedNo || null,
+                      residentToEdit: null
+                    });
+                  }}
+                  onEditRoom={(room) => setRoomFormModalState({ isOpen: true, roomToEdit: room })}
+                  onDeleteRoom={handleDeleteRoom}
+                />
+              )}
+
+              {activeTab === 'notices' && (
+                <NoticeBoard 
+                  notices={data.notices || []}
+                  onSaveNotice={handleSaveNotice}
+                  onDeleteNotice={handleDeleteNotice}
+                  onTogglePinNotice={handleTogglePinNotice}
+                />
+              )}
+
+              {activeTab === 'residents' && (
+                <ResidentsList 
+                  residents={data.residents}
+                  rooms={data.rooms}
+                  searchTerm={searchTerm}
+                  onOpenCheckIn={() => setResidentModalState({ isOpen: true, preSelectedRoom: null, preSelectedBed: null, residentToEdit: null })}
+                  onEditResident={(res) => setResidentModalState({ isOpen: true, preSelectedRoom: null, preSelectedBed: null, residentToEdit: res })}
+                  onVacateResident={handleVacateBed}
+                  onRecordPayment={(res) => {
+                    setActiveTab('payments');
+                  }}
+                />
+              )}
+
+              {activeTab === 'payments' && (
+                <PaymentsTracker 
+                  payments={data.payments}
+                  residents={data.residents}
+                  upiConfig={data.upiConfig}
+                  onSavePayment={handleSavePayment}
+                  showToast={showToast}
+                />
+              )}
+
+              {activeTab === 'maintenance' && (
+                <MaintenanceTracker 
+                  maintenance={data.maintenance}
+                  rooms={data.rooms}
+                  onSaveTicket={handleSaveTicket}
+                  onUpdateTicketStatus={handleUpdateTicketStatus}
+                />
+              )}
+
+              {activeTab === 'analytics' && (
+                <AnalyticsView 
+                  rooms={data.rooms}
+                  residents={data.residents}
+                  payments={data.payments}
+                />
+              )}
+
+              {activeTab === 'storage' && (
+                <DataStorageManager 
+                  appData={data}
+                  onRestoreData={handleRestoreData}
+                  onResetData={handleResetData}
+                  showToast={showToast}
+                />
+              )}
+            </>
           )}
         </div>
       </main>
+
+      {/* Login Modal */}
+      {(showLoginModal || !currentUser) && (
+        <LoginModal 
+          residents={data.residents}
+          onLogin={handleLogin}
+          onClose={currentUser ? () => setShowLoginModal(false) : null}
+        />
+      )}
 
       {/* Modals */}
       {selectedRoomForView && (
