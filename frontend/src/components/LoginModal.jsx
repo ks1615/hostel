@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ShieldCheck, User, KeyRound, X, Building2, AlertCircle } from 'lucide-react';
 
-export default function LoginModal({ residents, onLogin, onClose }) {
-  const [roleTab, setRoleTab] = useState('owner'); // 'owner' or 'member'
+export default function LoginModal({ residents, onLogin, onClose, initialRole = 'owner' }) {
+  const [roleTab, setRoleTab] = useState(initialRole);
 
   // Owner Form State - Empty by default, no password shown or leaked
   const [ownerUsername, setOwnerUsername] = useState('');

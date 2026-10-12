@@ -33,7 +33,11 @@ export default function App() {
       return null;
     }
   });
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginModalState, setLoginModalState] = useState({ isOpen: false, initialRole: 'owner' });
+
+  const handleOpenLogin = (role = 'owner') => {
+    setLoginModalState({ isOpen: true, initialRole: role });
+  };
 
   // Modals state
   const [selectedRoomForView, setSelectedRoomForView] = useState(null);
@@ -76,7 +80,7 @@ export default function App() {
 
   const handleLogin = (userObj) => {
     setCurrentUser(userObj);
-    setShowLoginModal(false);
+    setLoginModalState({ isOpen: false, initialRole: 'owner' });
     if (userObj.role === 'member') {
       setActiveTab('member_portal');
     } else {
@@ -396,7 +400,7 @@ export default function App() {
         pendingPaymentsCount={pendingPaymentsCount}
         openMaintenanceCount={openMaintenanceCount}
         noticeCount={noticeCount}
-        onOpenLogin={() => setShowLoginModal(true)}
+        onOpenLogin={handleOpenLogin}
       />
 
       <main className="main-content">
@@ -412,8 +416,9 @@ export default function App() {
           }}
           onImportTrigger={handleHeaderImportTrigger}
           onOpenAddRoom={() => setRoomFormModalState({ isOpen: true, roomToEdit: null })}
-          onOpenLogin={() => setShowLoginModal(true)}
+          onOpenLogin={handleOpenLogin}
           onLogout={handleLogout}
+          onNavigateToPublic={() => setActiveTab('rooms')}
         />
 
         <div className="page-wrapper">
@@ -525,12 +530,13 @@ export default function App() {
         </div>
       </main>
 
-      {/* Login Modal (Only opens when user clicks Login) */}
-      {showLoginModal && (
+      {/* Login Modal */}
+      {loginModalState.isOpen && (
         <LoginModal 
           residents={data.residents}
           onLogin={handleLogin}
-          onClose={() => setShowLoginModal(false)}
+          onClose={() => setLoginModalState({ isOpen: false, initialRole: 'owner' })}
+          initialRole={loginModalState.initialRole}
         />
       )}
 

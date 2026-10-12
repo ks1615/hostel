@@ -123,8 +123,11 @@ export default function RoomDetailModal({
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span className={`badge ${resident.rentStatus === 'Paid' ? 'badge-available' : resident.rentStatus === 'Pending' ? 'badge-maintenance' : 'badge-full'}`}>
-                          {resident.rentStatus}
+                        <span 
+                          className={`badge ${resident.rentStatus === 'Paid' ? 'badge-available' : 'badge-full'}`}
+                          style={{ fontWeight: 800, padding: '0.25rem 0.65rem' }}
+                        >
+                          {resident.rentStatus === 'Paid' ? '✓ Rent Paid' : `⚠️ Rent Unpaid (Due: ₹${(resident.monthlyRent || room.rent).toLocaleString()})`}
                         </span>
                         {isOwner && (
                           <button 

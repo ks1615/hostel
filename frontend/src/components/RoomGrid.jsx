@@ -30,6 +30,7 @@ export default function RoomGrid({
   const [selectedFloor, setSelectedFloor] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedType, setSelectedType] = useState('All');
+  const [selectedPaymentFilter, setSelectedPaymentFilter] = useState('All');
 
   // Compute stats
   const stats = useMemo(() => {
@@ -46,6 +47,8 @@ export default function RoomGrid({
     const vacantBeds = Math.max(0, totalCapacity - occupiedBeds);
     const occupancyRate = totalCapacity > 0 ? Math.round((occupiedBeds / totalCapacity) * 100) : 0;
     const totalMonthlyRevenue = residents.reduce((acc, r) => acc + (Number(r.monthlyRent) || 0), 0);
+    const paidCount = residents.filter(r => r.rentStatus === 'Paid').length;
+    const unpaidCount = residents.filter(r => r.rentStatus !== 'Paid').length;
 
     return {
       totalRooms,
@@ -53,7 +56,9 @@ export default function RoomGrid({
       occupiedBeds,
       vacantBeds,
       occupancyRate,
-      totalMonthlyRevenue
+      totalMonthlyRevenue,
+      paidCount,
+      unpaidCount
     };
   }, [rooms, residents]);
 
@@ -74,6 +79,22 @@ export default function RoomGrid({
       if (selectedStatus !== 'All' && room.status !== selectedStatus) return false;
       // Type match
       if (selectedType !== 'All' && room.type !== selectedType) return false;
+
+      // Payment Status match
+      if (selectedPaymentFilter === 'Paid') {
+        const hasPaid = room.beds.some(b => {
+          const occ = residents.find(r => r.id === b.residentId);
+          return occ && occ.rentStatus === 'Paid';
+        });
+        if (!hasPaid) return false;
+      } else if (selectedPaymentFilter === 'Unpaid') {
+        const hasUnpaid = room.beds.some(b => {
+          const occ = residents.find(r => r.id === b.residentId);
+          return occ && occ.rentStatus !== 'Paid';
+        });
+        if (!hasUnpaid) return false;
+      }
+
       // Search term
       if (searchTerm.trim() !== '') {
         const query = searchTerm.toLowerCase();
@@ -95,13 +116,13 @@ export default function RoomGrid({
       }
       return true;
     });
-  }, [rooms, residents, selectedBlock, selectedFloor, selectedStatus, selectedType, searchTerm]);
+  }, [rooms, residents, selectedBlock, selectedFloor, selectedStatus, selectedType, selectedPaymentFilter, searchTerm]);
 
   return (
     <div>
       {!isOwner && (
         <div style={{ 
-          background: 'rgba(99, 102, 241, 0.1)', 
+          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(16, 185, 129, 0.12))', 
           border: '1px solid var(--border-highlight)', 
           borderRadius: 'var(--radius-md)', 
           padding: '0.85rem 1.25rem', 
@@ -113,10 +134,12 @@ export default function RoomGrid({
           gap: '0.5rem'
         }}>
           <div>
-            <strong style={{ color: 'var(--accent-primary)' }}>👀 Public Visitor Mode (Read-Only)</strong>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>
-              You are viewing Sakhare Plot Hostel room details and availability. Login as Owner to edit or delete data.
-            </span>
+            <strong style={{ color: 'var(--accent-primary)', fontSize: '0.95rem' }}>
+              🌐 Page 3: Public Shared Link — Hostel Room & Rent Status Directory
+            </strong>
+            <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+              Viewing all rooms, bed occupants, and rent payment status (Paid / Unpaid). Only the Owner can edit or delete records.
+            </p>
           </div>
         </div>
       )}
@@ -128,13 +151,13 @@ export default function RoomGrid({
             <Building size={24} />
           </div>
           <div className="stat-info">
-            <div className="stat-value">{stats.totalRooms}</div>
-            <div className="stat-label">Total Rooms</div>
+            <div className="stat-value">{stats.totalRooms} Rooms</div>
+            <div className="stat-label">Total Rooms ({stats.totalCapacity} Total Beds)</div>
           </div>
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6' }}>
             <Bed size={24} />
           </div>
           <div className="stat-info">
@@ -144,22 +167,22 @@ export default function RoomGrid({
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6' }}>
-            <Users size={24} />
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+            <CheckCircle2 size={24} />
           </div>
           <div className="stat-info">
-            <div className="stat-value">{stats.occupancyRate}%</div>
-            <div className="stat-label">Occupancy Rate</div>
+            <div className="stat-value" style={{ color: '#10b981' }}>{stats.paidCount} Residents</div>
+            <div className="stat-label">Rent Status: ✓ Fully Paid</div>
           </div>
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' }}>
-            <IndianRupee size={24} />
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' }}>
+            <AlertTriangle size={24} />
           </div>
           <div className="stat-info">
-            <div className="stat-value">₹{stats.totalMonthlyRevenue.toLocaleString()}</div>
-            <div className="stat-label">Monthly Expected Rent</div>
+            <div className="stat-value" style={{ color: '#ef4444' }}>{stats.unpaidCount} Residents</div>
+            <div className="stat-label">Rent Status: ⚠️ Unpaid / Dues</div>
           </div>
         </div>
       </div>
@@ -212,6 +235,17 @@ export default function RoomGrid({
             {roomTypes.filter(t => t !== 'All').map(t => (
               <option key={t} value={t}>{t}</option>
             ))}
+          </select>
+
+          <select 
+            className="select-custom"
+            value={selectedPaymentFilter}
+            onChange={(e) => setSelectedPaymentFilter(e.target.value)}
+            style={{ fontWeight: 600 }}
+          >
+            <option value="All">All Rent Statuses</option>
+            <option value="Paid">🟢 Filter: Only Paid Rent</option>
+            <option value="Unpaid">🔴 Filter: Only Unpaid Dues</option>
           </select>
         </div>
 
@@ -269,20 +303,58 @@ export default function RoomGrid({
 
                 {/* Bed Allocation Indicator Matrix */}
                 <div className="beds-container">
-                  <div className="beds-title">Bed Allocation ({occupiedCount}/{room.capacity})</div>
-                  <div className="beds-list">
+                  <div className="beds-title">
+                    Hostel Residents & Payment Status ({occupiedCount}/{room.capacity})
+                  </div>
+                  <div className="beds-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                     {room.beds.map((bed, idx) => {
                       const occupant = residents.find(r => r.id === bed.residentId);
+                      const isPaid = occupant?.rentStatus === 'Paid';
                       return (
                         <div 
                           key={idx} 
                           className={`bed-item ${occupant ? 'occupied' : 'vacant'}`}
-                          title={occupant ? `Bed ${bed.bedNo}: ${occupant.name}` : `Bed ${bed.bedNo}: Vacant`}
+                          style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between',
+                            padding: '0.4rem 0.65rem'
+                          }}
                         >
-                          <Bed size={14} />
-                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {occupant ? occupant.name.split(' ')[0] : `Bed ${bed.bedNo}`}
-                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+                            <Bed size={14} style={{ flexShrink: 0 }} />
+                            <span style={{ fontWeight: 700, fontSize: '0.85rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {occupant ? `Bed ${bed.bedNo}: ${occupant.name}` : `Bed ${bed.bedNo}: Available`}
+                            </span>
+                          </div>
+
+                          {occupant ? (
+                            <span style={{ 
+                              fontSize: '0.725rem', 
+                              fontWeight: 800, 
+                              padding: '0.15rem 0.5rem', 
+                              borderRadius: 'var(--radius-full)',
+                              background: isPaid ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                              color: isPaid ? '#10b981' : '#ef4444',
+                              border: `1px solid ${isPaid ? '#10b98140' : '#ef444440'}`,
+                              flexShrink: 0
+                            }}>
+                              {isPaid ? '✓ PAID' : '⚠️ UNPAID'}
+                            </span>
+                          ) : (
+                            <span style={{ 
+                              fontSize: '0.7rem', 
+                              fontWeight: 700, 
+                              padding: '0.12rem 0.45rem', 
+                              borderRadius: 'var(--radius-full)',
+                              background: 'rgba(99, 102, 241, 0.1)',
+                              color: 'var(--accent-primary)',
+                              border: '1px solid rgba(99, 102, 241, 0.25)',
+                              flexShrink: 0
+                            }}>
+                              VACANT
+                            </span>
+                          )}
                         </div>
                       );
                     })}
