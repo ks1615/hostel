@@ -47,7 +47,7 @@ export default function DataStorageManager({
       {/* Storage Header */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1' }}>
+          <div className="stat-icon" style={{ background: 'rgba(20, 18, 16, 0.08)', color: 'var(--color-black)' }}>
             <HardDrive size={24} />
           </div>
           <div className="stat-info">
@@ -57,7 +57,7 @@ export default function DataStorageManager({
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 126, 89, 0.12)', color: '#107e59' }}>
             <ShieldCheck size={24} />
           </div>
           <div className="stat-info">
@@ -243,7 +243,7 @@ export default function DataStorageManager({
             overflow: 'auto',
             fontSize: '0.8rem',
             fontFamily: 'monospace',
-            color: '#a5b4fc'
+            color: '#c5a059'
           }}>
             {JSON.stringify(appData, null, 2)}
           </pre>

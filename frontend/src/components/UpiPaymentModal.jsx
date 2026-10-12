@@ -54,9 +54,9 @@ export default function UpiPaymentModal({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" style={{ maxWidth: '540px' }} onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(16, 185, 129, 0.2))' }}>
+        <div className="modal-header" style={{ background: 'linear-gradient(135deg, rgba(20, 18, 16, 0.04), rgba(197, 160, 89, 0.12))' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ background: '#6366f1', color: '#fff', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: '#141210', color: 'var(--accent-gold)', border: '1.5px solid var(--accent-gold)', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(20, 18, 16, 0.12)' }}>
               <QrCode size={22} />
             </div>
             <div>
@@ -121,7 +121,7 @@ export default function UpiPaymentModal({
               borderRadius: '16px', 
               display: 'inline-block',
               boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
-              border: '4px solid #6366f1',
+              border: '3px solid #c5a059',
               marginBottom: '1rem',
               maxWidth: '280px'
             }}>

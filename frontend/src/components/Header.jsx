@@ -18,79 +18,31 @@ export default function Header({
   const isMember = currentUser?.role === 'member';
 
   return (
-    <header className="top-header" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
+    <header className="top-header">
       <div className="header-brand">
         <div className="header-logo">
-          <Building2 size={24} />
+          <Building2 size={22} />
         </div>
         <div>
           <h1 className="brand-title">Sakhare Plot Hostel</h1>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            {isOwner ? '👑 Owner Admin (Full Edit/Delete)' : isMember ? '🎓 Member Student Portal' : '🌐 Page 3: Public Shared Link (Rooms & Paid/Unpaid)'}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.15rem' }}>
+            <span style={{ 
+              fontSize: '0.725rem', 
+              fontWeight: 700, 
+              color: 'var(--text-primary)', 
+              background: 'var(--bg-surface)', 
+              padding: '0.12rem 0.55rem', 
+              borderRadius: 'var(--radius-full)', 
+              border: '1px solid var(--border-color)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem'
+            }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-gold)' }}></span>
+              {isOwner ? '👑 Owner Admin (Full Edit/Delete)' : isMember ? '🎓 Resident Student Portal' : '🌐 Page 3: Public Shared Link (Paid/Unpaid)'}
+            </span>
+          </div>
         </div>
-      </div>
-
-      {/* 3 Pages Portal Selector */}
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: '0.35rem', 
-        background: 'var(--bg-surface)', 
-        padding: '0.25rem', 
-        borderRadius: 'var(--radius-full)', 
-        border: '1px solid var(--border-color)' 
-      }}>
-        <button
-          type="button"
-          className={`btn btn-sm ${!currentUser ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ 
-            borderRadius: 'var(--radius-full)', 
-            fontSize: '0.75rem', 
-            padding: '0.35rem 0.75rem',
-            fontWeight: 700 
-          }}
-          onClick={() => {
-            if (currentUser) onLogout();
-            else if (onNavigateToPublic) onNavigateToPublic();
-          }}
-          title="Page 3: Public Shared Link — View who is in which room and Paid/Unpaid rent (Read-Only)"
-        >
-          <Globe size={14} />
-          <span>3. Public View (Paid/Unpaid)</span>
-        </button>
-
-        <button
-          type="button"
-          className={`btn btn-sm ${isMember ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ 
-            borderRadius: 'var(--radius-full)', 
-            fontSize: '0.75rem', 
-            padding: '0.35rem 0.75rem',
-            fontWeight: 700 
-          }}
-          onClick={() => onOpenLogin('member')}
-          title="Page 2: Member Portal — Student login for my room and payments"
-        >
-          <User size={14} />
-          <span>2. Member Login</span>
-        </button>
-
-        <button
-          type="button"
-          className={`btn btn-sm ${isOwner ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ 
-            borderRadius: 'var(--radius-full)', 
-            fontSize: '0.75rem', 
-            padding: '0.35rem 0.75rem',
-            fontWeight: 700 
-          }}
-          onClick={() => onOpenLogin('owner')}
-          title="Page 1: Owner Admin — Full control to add, edit and delete rooms & residents"
-        >
-          <ShieldCheck size={14} />
-          <span>1. Owner Admin (Edit/Delete)</span>
-        </button>
       </div>
 
       <div className="search-box">
@@ -112,7 +64,7 @@ export default function Header({
               title="Download JSON Backup"
             >
               <Download size={16} />
-              <span>Export JSON</span>
+              <span>Export</span>
             </button>
 
             <button 
@@ -125,7 +77,7 @@ export default function Header({
             </button>
 
             <button 
-              className="btn btn-primary btn-sm"
+              className="btn btn-gold btn-sm"
               onClick={onOpenAddRoom}
             >
               <Plus size={16} />
@@ -142,19 +94,20 @@ export default function Header({
           {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </button>
 
-        {currentUser && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-card)', padding: '0.3rem 0.65rem', borderRadius: 'var(--radius-full)', border: '1px solid var(--border-color)' }}>
+        {currentUser ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#ffffff', padding: '0.3rem 0.75rem', borderRadius: 'var(--radius-full)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
             <span style={{ 
-              background: isOwner ? 'rgba(99, 102, 241, 0.2)' : 'rgba(16, 185, 129, 0.2)', 
-              color: isOwner ? 'var(--accent-primary)' : '#10b981', 
+              background: isOwner ? 'rgba(197, 160, 89, 0.15)' : 'rgba(20, 18, 16, 0.08)', 
+              color: isOwner ? '#8c6b2d' : '#141210', 
               padding: '0.15rem 0.5rem', 
               borderRadius: 'var(--radius-full)', 
               fontSize: '0.75rem', 
-              fontWeight: 700 
+              fontWeight: 800,
+              border: isOwner ? '1px solid rgba(197, 160, 89, 0.4)' : '1px solid rgba(20, 18, 16, 0.15)'
             }}>
               {isOwner ? '👑 Owner' : '🎓 Member'}
             </span>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {currentUser.name.split(' ')[0]}
             </span>
             <button 
@@ -166,6 +119,15 @@ export default function Header({
               <LogOut size={16} />
             </button>
           </div>
+        ) : (
+          <button 
+            className="btn btn-primary btn-sm"
+            onClick={() => onOpenLogin('owner')}
+            title="Owner or Member Login"
+          >
+            <User size={14} />
+            <span>Login</span>
+          </button>
         )}
       </div>
     </header>

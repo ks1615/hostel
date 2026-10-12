@@ -1,48 +1,70 @@
 /* ==========================================================================
    STARLIGHT HOSTEL MANAGEMENT & DATA STORAGE DESIGN SYSTEM
+   THEME: 70% BEIGE, 25% BLACK, 5% MUTED GOLD
    ========================================================================== */
 
 :root {
-  /* Color Palette - Dark Theme (Default) */
-  --bg-main: #0b0f19;
-  --bg-surface: #111827;
-  --bg-card: #1f293d;
-  --bg-card-hover: #28354e;
-  --bg-glass: rgba(17, 24, 39, 0.75);
+  /* ==========================================================================
+     LUXURY 70-25-5 COLOR RATIO:
+     - 70% BEIGE: Warm luxury linen canvas, creamy sand surfaces, ivory cards
+     - 25% BLACK: Deep obsidian structure, sharp typography, charcoal accents
+     - 5% MUTED GOLD: Subtle metallic highlights, active glow, VIP crowns
+     ========================================================================== */
+
+  /* 70% BEIGE (Canvas & Surfaces) */
+  --bg-main: #f5f0ea;           /* Warm Luxury Linen Beige */
+  --bg-surface: #ede6dc;        /* Soft Creamy Sand Beige */
+  --bg-card: #ffffff;           /* Clean Ivory / Porcelain Card */
+  --bg-card-hover: #faf6f0;     /* Warm Beige Card Hover */
+  --bg-glass: rgba(245, 240, 234, 0.94);
+  --bg-subtle: #eae3d7;         /* Warm Beige accent background */
   
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-highlight: rgba(99, 102, 241, 0.3);
+  --border-color: #dfd7cb;      /* Soft Warm Beige Border */
+  --border-highlight: #c5a059;  /* Muted Gold Highlight Border */
+  --border-gold: rgba(197, 160, 89, 0.4);
   
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  /* 25% BLACK / DEEP CHARCOAL (Structure, Text & Buttons) */
+  --color-black: #141210;       /* Deep Obsidian Black */
+  --color-black-surface: #1e1b18; /* Rich Charcoal Surface */
+  --color-black-hover: #2b2724;
+  --text-primary: #141210;      /* Razor-sharp Black Text */
+  --text-secondary: #524c44;    /* Warm Deep Taupe Gray */
+  --text-muted: #7e7469;        /* Soft Antique Gray */
   
-  /* Primary Accent - Indigo/Purple */
-  --accent-primary: #6366f1;
-  --accent-primary-hover: #4f46e5;
-  --accent-glow: rgba(99, 102, 241, 0.25);
-  
-  /* Status Colors */
-  --color-available: #10b981;
-  --color-available-bg: rgba(16, 185, 129, 0.15);
-  --color-occupied: #3b82f6;
-  --color-occupied-bg: rgba(59, 130, 246, 0.15);
-  --color-full: #8b5cf6;
-  --color-full-bg: rgba(139, 92, 246, 0.15);
-  --color-maintenance: #f59e0b;
-  --color-maintenance-bg: rgba(245, 158, 11, 0.15);
-  --color-danger: #ef4444;
-  --color-danger-bg: rgba(239, 68, 68, 0.15);
+  /* 5% MUTED GOLD (Refined Accents & Status) */
+  --color-gold: #c5a059;        /* Muted Antique Gold */
+  --color-gold-hover: #b38e47;  /* Deep Muted Gold */
+  --color-gold-light: #dfc182;  /* Soft Radiant Gold */
+  --color-gold-bg: rgba(197, 160, 89, 0.12); /* Subtle Gold Tint */
+  --color-gold-glow: rgba(197, 160, 89, 0.28);
+
+  /* Primary Accent Token */
+  --accent-primary: #c5a059;
+  --accent-primary-hover: #b38e47;
+  --accent-glow: rgba(197, 160, 89, 0.25);
+
+  /* Status Colors Harmonized with Beige/Black/Gold */
+  --color-available: #107e59;   /* Deep Forest Jade (Paid) */
+  --color-available-bg: rgba(16, 126, 89, 0.1);
+  --color-occupied: #1e3a8a;    /* Deep Classic Navy */
+  --color-occupied-bg: rgba(30, 58, 138, 0.1);
+  --color-full: #581c87;
+  --color-full-bg: rgba(88, 28, 135, 0.1);
+  --color-maintenance: #c5a059; /* Muted Gold for Maintenance */
+  --color-maintenance-bg: rgba(197, 160, 89, 0.15);
+  --color-danger: #b91c1c;      /* Deep Wine Red (Unpaid dues) */
+  --color-danger-bg: rgba(185, 28, 28, 0.1);
   
   /* Typography */
   --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-family-display: 'Outfit', sans-serif;
   
-  /* Shadows & Effects */
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
-  --shadow-lg: 0 10px 25px rgba(0,0,0,0.4);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+  /* Shadows & Depth */
+  --shadow-sm: 0 1px 4px rgba(20, 18, 16, 0.05);
+  --shadow-md: 0 4px 14px rgba(20, 18, 16, 0.08);
+  --shadow-lg: 0 12px 30px rgba(20, 18, 16, 0.12);
+  --shadow-glow: 0 0 20px rgba(197, 160, 89, 0.25);
+  --shadow-gold-glow: 0 0 20px rgba(197, 160, 89, 0.3);
   
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -53,23 +75,25 @@
   --transition-normal: 0.25s ease;
 }
 
-[data-theme="light"] {
-  --bg-main: #f3f4f6;
-  --bg-surface: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
-  --bg-glass: rgba(255, 255, 255, 0.85);
+[data-theme="dark"] {
+  --bg-main: #141210;
+  --bg-surface: #1e1b18;
+  --bg-card: #25221e;
+  --bg-card-hover: #2f2b26;
+  --bg-glass: rgba(20, 18, 16, 0.92);
+  --bg-subtle: #2b2723;
   
-  --border-color: #e5e7eb;
-  --border-highlight: rgba(99, 102, 241, 0.4);
+  --border-color: #38332c;
+  --border-highlight: #c5a059;
+  --border-gold: rgba(197, 160, 89, 0.45);
   
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
+  --text-primary: #f5f0ea;
+  --text-secondary: #b8aea1;
+  --text-muted: #857b70;
   
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.6);
 }
 
 /* Reset & Global */
@@ -114,8 +138,10 @@ h1, h2, h3, h4, h5, h6 {
 .app-container {
   display: flex;
   min-height: 100vh;
-  background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
-              radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+  background-color: var(--bg-main);
+  background-image: 
+    radial-gradient(circle at 12% 15%, rgba(197, 160, 89, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(20, 18, 16, 0.04) 0%, transparent 45%);
 }
 
 .main-content {
@@ -136,10 +162,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Header Navbar */
 .top-header {
-  height: 70px;
+  height: 72px;
   background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -153,27 +179,27 @@ h1, h2, h3, h4, h5, h6 {
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .header-logo {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--accent-primary), #8b5cf6);
+  width: 42px;
+  height: 42px;
+  background: #141210;
+  border: 1.5px solid var(--accent-gold);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  box-shadow: var(--shadow-glow);
+  color: var(--accent-gold);
+  box-shadow: 0 2px 8px rgba(20, 18, 16, 0.12);
 }
 
 .brand-title {
   font-size: 1.25rem;
   font-weight: 800;
-  background: linear-gradient(90deg, #ffffff, #a5b4fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #141210;
+  letter-spacing: -0.01em;
 }
 
 .header-actions {
@@ -184,36 +210,37 @@ h1, h2, h3, h4, h5, h6 {
 
 .search-box {
   position: relative;
-  width: 280px;
+  width: 290px;
 }
 .search-box input {
   width: 100%;
-  padding: 0.5rem 0.75rem 0.5rem 2.25rem;
-  background: var(--bg-surface);
+  padding: 0.55rem 0.85rem 0.55rem 2.35rem;
+  background: #ffffff;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-full);
   color: var(--text-primary);
   font-size: 0.875rem;
   transition: var(--transition-fast);
+  box-shadow: inset 0 1px 2px rgba(20, 18, 16, 0.04);
 }
 .search-box input:focus {
   outline: none;
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px var(--accent-gold-bg);
 }
 .search-box svg {
   position: absolute;
-  left: 0.75rem;
+  left: 0.85rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
 }
 
-/* Sidebar Navigation */
+/* Sidebar Navigation (25% Rich Charcoal Black for Grounding) */
 .sidebar {
   width: 260px;
-  background: var(--bg-surface);
-  border-right: 1px solid var(--border-color);
+  background: #161412;
+  border-right: 1px solid rgba(197, 160, 89, 0.2);
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
@@ -221,12 +248,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-group-title {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  color: var(--accent-gold);
   margin: 1.25rem 0.75rem 0.5rem;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .nav-link {
@@ -235,7 +262,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
-  color: var(--text-secondary);
+  color: #a89f94;
   text-decoration: none;
   font-weight: 500;
   font-size: 0.925rem;
@@ -247,29 +274,139 @@ h1, h2, h3, h4, h5, h6 {
   transition: var(--transition-fast);
 }
 .nav-link:hover {
-  background: var(--bg-card);
-  color: var(--text-primary);
+  background: #25221e;
+  color: #f5f0ea;
 }
 .nav-link.active {
-  background: linear-gradient(90deg, var(--accent-primary), #4f46e5);
-  color: #ffffff;
-  box-shadow: var(--shadow-glow);
+  background: linear-gradient(90deg, #c5a059, #b38e47);
+  color: #141210;
+  font-weight: 700;
+  box-shadow: 0 3px 12px rgba(197, 160, 89, 0.35);
 }
 .nav-badge {
   margin-left: auto;
   font-size: 0.75rem;
   padding: 0.15rem 0.5rem;
   border-radius: var(--radius-full);
-  background: rgba(255,255,255,0.15);
-  font-weight: 600;
+  background: rgba(20, 18, 16, 0.25);
+  color: #141210;
+  font-weight: 700;
+}
+
+/* 3-Page Portal Experience Selector (Clean, Repositioned & Elegant) */
+.portal-switcher-banner {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+.portal-switcher-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #141210 0%, #c5a059 50%, #141210 100%);
+}
+.portal-switcher-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.95rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.portal-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+@media (max-width: 960px) {
+  .portal-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.portal-card-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-surface);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition-fast);
+  color: var(--text-primary);
+}
+.portal-card-btn:hover {
+  border-color: var(--accent-gold);
+  background: #faf6f0;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+.portal-card-btn.active {
+  background: #141210;
+  border-color: var(--accent-gold);
+  color: #f5f0ea;
+  box-shadow: 0 4px 16px rgba(20, 18, 16, 0.22);
+}
+.portal-card-btn.active .portal-card-desc {
+  color: #b8aea1;
+}
+.portal-card-btn.active .portal-card-title {
+  color: #f5f0ea;
+}
+.portal-card-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.portal-card-desc {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+.portal-active-pill {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  background: var(--accent-gold);
+  color: #141210;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+.portal-switch-pill {
+  font-size: 0.725rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  background: #ffffff;
+  color: #141210;
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+}
+.portal-card-btn:hover .portal-switch-pill {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
 }
 
 /* Storage Health Bar Component */
 .storage-widget {
   margin-top: auto;
   padding: 1rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: #201d19;
+  border: 1px solid rgba(197, 160, 89, 0.2);
   border-radius: var(--radius-md);
 }
 .storage-header {
@@ -279,17 +416,18 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0.5rem;
   font-size: 0.8rem;
   font-weight: 600;
+  color: #f5f0ea;
 }
 .storage-bar {
   height: 6px;
-  background: var(--bg-main);
+  background: #141210;
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: 0.5rem;
 }
 .storage-fill {
   height: 100%;
-  background: linear-gradient(90deg, #10b981, var(--accent-primary));
+  background: linear-gradient(90deg, #c5a059, #dfc182);
   border-radius: 3px;
   transition: width 0.4s ease;
 }
@@ -393,22 +531,37 @@ h1, h2, h3, h4, h5, h6 {
   white-space: nowrap;
 }
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-hover));
-  color: #ffffff;
-  box-shadow: 0 4px 14px var(--accent-glow);
+  background: #141210;
+  color: #f5f0ea;
+  border: 1px solid var(--accent-gold);
+  box-shadow: 0 3px 10px rgba(20, 18, 16, 0.15);
 }
 .btn-primary:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.1);
+  background: #25221e;
+  color: #ffffff;
+  border-color: #dfc182;
+  box-shadow: 0 4px 14px rgba(197, 160, 89, 0.25);
+}
+.btn-gold {
+  background: linear-gradient(135deg, #c5a059 0%, #b38e47 100%);
+  color: #141210;
+  font-weight: 700;
+  border: 1px solid #c5a059;
+  box-shadow: 0 3px 10px rgba(197, 160, 89, 0.25);
+}
+.btn-gold:hover {
+  background: linear-gradient(135deg, #dfc182 0%, #c5a059 100%);
+  box-shadow: 0 5px 16px rgba(197, 160, 89, 0.35);
 }
 .btn-secondary {
-  background: var(--bg-surface);
-  color: var(--text-primary);
+  background: #ffffff;
+  color: #141210;
   border: 1px solid var(--border-color);
 }
 .btn-secondary:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--text-muted);
+  background: var(--bg-surface);
+  border-color: var(--accent-gold);
+  color: #141210;
 }
 .btn-outline {
   background: transparent;
@@ -446,22 +599,27 @@ h1, h2, h3, h4, h5, h6 {
 .badge-available {
   background: var(--color-available-bg);
   color: var(--color-available);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(20, 184, 166, 0.35);
 }
 .badge-occupied {
   background: var(--color-occupied-bg);
-  color: var(--color-occupied);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+  border: 1px solid rgba(37, 99, 235, 0.35);
 }
 .badge-full {
   background: var(--color-full-bg);
-  color: var(--color-full);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #38bdf8;
+  border: 1px solid rgba(2, 132, 199, 0.35);
+}
+.badge-gold {
+  background: var(--color-gold-bg);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
 }
 .badge-maintenance {
   background: var(--color-maintenance-bg);
   color: var(--color-maintenance);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(245, 158, 11, 0.35);
 }
 
 /* Room Grid Layout */
@@ -554,14 +712,14 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--border-color);
 }
 .bed-item.occupied {
-  border-color: rgba(59, 130, 246, 0.4);
-  background: rgba(59, 130, 246, 0.08);
-  color: #60a5fa;
+  border-color: rgba(29, 78, 216, 0.45);
+  background: rgba(29, 78, 216, 0.12);
+  color: #93c5fd;
 }
 .bed-item.vacant {
-  border-color: rgba(16, 185, 129, 0.4);
-  background: rgba(16, 185, 129, 0.08);
-  color: #34d399;
+  border-color: rgba(6, 182, 212, 0.45);
+  background: rgba(6, 182, 212, 0.12);
+  color: #22d3ee;
 }
 
 .room-footer {
@@ -725,13 +883,15 @@ h1, h2, h3, h4, h5, h6 {
   width: 38px;
   height: 38px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--accent-primary), #a855f7);
+  background: #141210;
+  border: 1.5px solid var(--accent-gold);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--accent-gold);
   font-weight: 700;
   font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(20, 18, 16, 0.12);
 }
 
 /* Charts & Analytics Visuals */

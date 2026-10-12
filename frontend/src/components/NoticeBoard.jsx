@@ -108,7 +108,7 @@ export default function NoticeBoard({
 
           {isOwner && (
             <button 
-              className="btn btn-primary"
+              className="btn btn-gold"
               onClick={handleOpenAdd}
             >
               <Plus size={16} />
@@ -138,20 +138,20 @@ export default function NoticeBoard({
           {sortedNotices.map(notice => {
             let catColor = 'var(--accent-primary)';
             if (notice.category === 'Urgent') catColor = 'var(--color-danger)';
-            else if (notice.category === 'Utility') catColor = 'var(--color-maintenance)';
+            else if (notice.category === 'Utility') catColor = 'var(--color-gold)';
 
             return (
               <div 
                 key={notice.id}
                 style={{ 
                   background: 'var(--bg-card)', 
-                  border: notice.isPinned ? '2px solid var(--accent-primary)' : '1px solid var(--border-color)', 
+                  border: notice.isPinned ? '2px solid var(--color-gold)' : '1px solid var(--border-color)', 
                   borderRadius: 'var(--radius-lg)', 
                   padding: '1.25rem',
                   display: 'flex',
                   flexDirection: 'column',
                   position: 'relative',
-                  boxShadow: notice.isPinned ? 'var(--shadow-glow)' : 'var(--shadow-sm)'
+                  boxShadow: notice.isPinned ? 'var(--shadow-gold-glow)' : 'var(--shadow-sm)'
                 }}
               >
                 {/* Notice Header */}
@@ -175,7 +175,7 @@ export default function NoticeBoard({
                         className="btn btn-secondary btn-sm"
                         onClick={() => onTogglePinNotice(notice.id)}
                         title={notice.isPinned ? 'Unpin Notice' : 'Pin Notice to Top'}
-                        style={{ color: notice.isPinned ? 'var(--accent-primary)' : 'var(--text-muted)' }}
+                        style={{ color: notice.isPinned ? 'var(--color-gold)' : 'var(--text-muted)' }}
                       >
                         <Pin size={14} />
                       </button>

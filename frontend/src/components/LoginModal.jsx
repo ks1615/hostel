@@ -77,17 +77,19 @@ export default function LoginModal({ residents, onLogin, onClose, initialRole = 
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" style={{ maxWidth: '440px' }} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="modal-header" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2))' }}>
+        <div className="modal-header" style={{ background: 'linear-gradient(135deg, rgba(20, 18, 16, 0.04), rgba(197, 160, 89, 0.12))' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{ 
-              background: 'linear-gradient(135deg, var(--accent-primary), #8b5cf6)', 
-              color: '#fff', 
+              background: '#141210', 
+              color: 'var(--accent-gold)', 
+              border: '1.5px solid var(--accent-gold)',
               width: '42px', 
               height: '42px', 
               borderRadius: '12px', 
               display: 'flex', 
               alignItems: 'center', 
-              justifyContent: 'center' 
+              justifyContent: 'center',
+              boxShadow: '0 2px 8px rgba(20, 18, 16, 0.15)' 
             }}>
               <Building2 size={22} />
             </div>
@@ -161,8 +163,8 @@ export default function LoginModal({ residents, onLogin, onClose, initialRole = 
           {roleTab === 'owner' && (
             <form onSubmit={handleOwnerSubmit}>
               <div style={{ 
-                background: 'rgba(99, 102, 241, 0.08)', 
-                border: '1px solid rgba(99, 102, 241, 0.2)', 
+                background: 'rgba(245, 158, 11, 0.08)', 
+                border: '1px solid rgba(245, 158, 11, 0.25)', 
                 borderRadius: 'var(--radius-md)', 
                 padding: '0.75rem 1rem', 
                 fontSize: '0.8rem', 
@@ -172,7 +174,7 @@ export default function LoginModal({ residents, onLogin, onClose, initialRole = 
                 alignItems: 'center',
                 gap: '0.5rem'
               }}>
-                <ShieldCheck size={18} color="var(--accent-primary)" />
+                <ShieldCheck size={18} color="var(--color-gold)" />
                 <span>Owner login required to add, edit or delete hostel records.</span>
               </div>
 
@@ -201,7 +203,7 @@ export default function LoginModal({ residents, onLogin, onClose, initialRole = 
                 />
               </div>
 
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '0.75rem', padding: '0.75rem' }}>
+              <button type="submit" className="btn btn-gold" style={{ width: '100%', marginTop: '0.75rem', padding: '0.75rem' }}>
                 <ShieldCheck size={18} />
                 <span>Login as Owner</span>
               </button>
@@ -254,7 +256,7 @@ export default function LoginModal({ residents, onLogin, onClose, initialRole = 
                 />
               </div>
 
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '0.75rem', padding: '0.75rem', background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '0.75rem', padding: '0.75rem' }}>
                 <User size={18} />
                 <span>Login as Member</span>
               </button>

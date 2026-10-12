@@ -122,32 +122,44 @@ export default function RoomGrid({
     <div>
       {!isOwner && (
         <div style={{ 
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(16, 185, 129, 0.12))', 
-          border: '1px solid var(--border-highlight)', 
+          background: 'var(--bg-card)', 
+          border: '1px solid var(--border-color)', 
           borderRadius: 'var(--radius-md)', 
-          padding: '0.85rem 1.25rem', 
+          padding: '0.75rem 1.25rem', 
           marginBottom: '1.25rem', 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '0.5rem'
+          gap: '0.5rem',
+          boxShadow: 'var(--shadow-sm)'
         }}>
           <div>
-            <strong style={{ color: 'var(--accent-primary)', fontSize: '0.95rem' }}>
-              🌐 Page 3: Public Shared Link — Hostel Room & Rent Status Directory
+            <strong style={{ color: 'var(--color-black)', fontSize: '0.9rem' }}>
+              🌐 Public Live Directory (Read-Only)
             </strong>
-            <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-              Viewing all rooms, bed occupants, and rent payment status (Paid / Unpaid). Only the Owner can edit or delete records.
-            </p>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>
+              Showing real-time room occupancy, residents, and Paid / Unpaid rent status.
+            </span>
           </div>
+          <span style={{ 
+            fontSize: '0.75rem', 
+            fontWeight: 700, 
+            color: 'var(--color-black)', 
+            background: 'var(--bg-surface)', 
+            padding: '0.2rem 0.6rem', 
+            borderRadius: 'var(--radius-full)',
+            border: '1px solid var(--border-color)'
+          }}>
+            🔒 Edits & Deletes Locked to Owner
+          </span>
         </div>
       )}
 
       {/* Top Banner Stats */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1' }}>
+          <div className="stat-icon" style={{ background: 'rgba(20, 18, 16, 0.08)', color: 'var(--color-black)' }}>
             <Building size={24} />
           </div>
           <div className="stat-info">
@@ -157,7 +169,7 @@ export default function RoomGrid({
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(197, 160, 89, 0.15)', color: '#8c6b2d' }}>
             <Bed size={24} />
           </div>
           <div className="stat-info">
@@ -167,21 +179,21 @@ export default function RoomGrid({
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 126, 89, 0.12)', color: '#107e59' }}>
             <CheckCircle2 size={24} />
           </div>
           <div className="stat-info">
-            <div className="stat-value" style={{ color: '#10b981' }}>{stats.paidCount} Residents</div>
+            <div className="stat-value" style={{ color: '#107e59' }}>{stats.paidCount} Residents</div>
             <div className="stat-label">Rent Status: ✓ Fully Paid</div>
           </div>
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' }}>
+          <div className="stat-icon" style={{ background: 'rgba(185, 28, 28, 0.12)', color: '#b91c1c' }}>
             <AlertTriangle size={24} />
           </div>
           <div className="stat-info">
-            <div className="stat-value" style={{ color: '#ef4444' }}>{stats.unpaidCount} Residents</div>
+            <div className="stat-value" style={{ color: '#b91c1c' }}>{stats.unpaidCount} Residents</div>
             <div className="stat-label">Rent Status: ⚠️ Unpaid / Dues</div>
           </div>
         </div>
@@ -334,9 +346,9 @@ export default function RoomGrid({
                               fontWeight: 800, 
                               padding: '0.15rem 0.5rem', 
                               borderRadius: 'var(--radius-full)',
-                              background: isPaid ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                              color: isPaid ? '#10b981' : '#ef4444',
-                              border: `1px solid ${isPaid ? '#10b98140' : '#ef444440'}`,
+                              background: isPaid ? 'rgba(16, 126, 89, 0.12)' : 'rgba(185, 28, 28, 0.12)',
+                              color: isPaid ? '#107e59' : '#b91c1c',
+                              border: `1px solid ${isPaid ? 'rgba(16, 126, 89, 0.3)' : 'rgba(185, 28, 28, 0.3)'}`,
                               flexShrink: 0
                             }}>
                               {isPaid ? '✓ PAID' : '⚠️ UNPAID'}
@@ -346,11 +358,11 @@ export default function RoomGrid({
                               fontSize: '0.7rem', 
                               fontWeight: 700, 
                               padding: '0.12rem 0.45rem', 
-                              borderRadius: 'var(--radius-full)',
-                              background: 'rgba(99, 102, 241, 0.1)',
-                              color: 'var(--accent-primary)',
-                              border: '1px solid rgba(99, 102, 241, 0.25)',
-                              flexShrink: 0
+                              borderRadius: 'var(--radius-full)', 
+                              background: 'var(--bg-surface)', 
+                              color: 'var(--text-muted)', 
+                              border: '1px solid var(--border-color)', 
+                              flexShrink: 0 
                             }}>
                               VACANT
                             </span>

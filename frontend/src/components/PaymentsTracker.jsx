@@ -90,7 +90,7 @@ export default function PaymentsTracker({
 
       {/* Hostel UPI Scanner Quick Banner */}
       <div style={{ 
-        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(16, 185, 129, 0.15))', 
+        background: 'linear-gradient(135deg, rgba(20, 18, 16, 0.04), rgba(197, 160, 89, 0.12))', 
         border: '1px solid var(--border-highlight)', 
         borderRadius: 'var(--radius-lg)', 
         padding: '1.25rem 1.5rem', 
@@ -106,7 +106,7 @@ export default function PaymentsTracker({
             background: '#ffffff', 
             padding: '4px', 
             borderRadius: '10px', 
-            border: '2px solid #6366f1',
+            border: '2px solid #c5a059',
             boxShadow: 'var(--shadow-sm)' 
           }}>
             <img 
@@ -152,7 +152,7 @@ export default function PaymentsTracker({
             background: '#ffffff', 
             padding: '8px', 
             borderRadius: '12px', 
-            border: '3px solid #6366f1',
+            border: '2px solid #c5a059',
             boxShadow: 'var(--shadow-sm)'
           }}>
             <img 
@@ -403,7 +403,7 @@ export default function PaymentsTracker({
 
             <div className="modal-body" style={{ background: '#ffffff', color: '#111827', borderRadius: '12px', padding: '1.5rem', margin: '1rem' }}>
               <div style={{ textAlign: 'center', borderBottom: '2px dashed #e5e7eb', paddingBottom: '1rem', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1.25rem', color: '#4f46e5', fontWeight: 800 }}>SAKHARE PLOT HOSTEL</h3>
+                <h3 style={{ fontSize: '1.25rem', color: '#141210', fontWeight: 800 }}>SAKHARE PLOT HOSTEL</h3>
                 <p style={{ fontSize: '0.8rem', color: '#6b7280' }}>Official Rent Receipt</p>
                 <div style={{ fontSize: '0.85rem', fontWeight: 700, marginTop: '0.5rem', color: '#111827' }}>
                   {selectedReceipt.receiptNo}

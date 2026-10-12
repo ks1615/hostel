@@ -422,6 +422,138 @@ export default function App() {
         />
 
         <div className="page-wrapper">
+          {/* 3-Page System Portal Experience Selector (Dedicated Position) */}
+          <div className="portal-switcher-banner">
+            <div className="portal-switcher-top">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <span style={{ 
+                  background: 'var(--color-black)', 
+                  color: 'var(--accent-gold)', 
+                  padding: '0.2rem 0.55rem', 
+                  borderRadius: 'var(--radius-sm)', 
+                  fontSize: '0.72rem', 
+                  fontWeight: 800,
+                  letterSpacing: '0.06em'
+                }}>
+                  SYSTEM PORTALS
+                </span>
+                <span style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                  Select which view you want to access:
+                </span>
+              </div>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                Active Mode: <strong style={{ color: 'var(--color-black)' }}>{isOwner ? '👑 Page 1: Owner Admin' : isMember ? '🎓 Page 2: Resident Member' : '🌐 Page 3: Public Shared Link'}</strong>
+              </span>
+            </div>
+
+            <div className="portal-cards-grid">
+              {/* Page 1: Owner Admin */}
+              <button 
+                type="button"
+                className={`portal-card-btn ${isOwner ? 'active' : ''}`}
+                onClick={() => handleOpenLogin('owner')}
+                title="Page 1: Full owner admin control to add, edit and delete rooms and residents"
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ 
+                    width: '38px', 
+                    height: '38px', 
+                    borderRadius: '10px', 
+                    background: isOwner ? 'var(--accent-gold)' : 'rgba(20, 18, 16, 0.08)', 
+                    color: isOwner ? '#141210' : '#141210', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    fontSize: '1.2rem',
+                    flexShrink: 0
+                  }}>
+                    👑
+                  </div>
+                  <div>
+                    <div className="portal-card-title">1. Owner Admin</div>
+                    <div className="portal-card-desc">Full edit & delete permissions</div>
+                  </div>
+                </div>
+                {isOwner ? (
+                  <span className="portal-active-pill">ACTIVE</span>
+                ) : (
+                  <span className="portal-switch-pill">Login</span>
+                )}
+              </button>
+
+              {/* Page 2: Member Portal */}
+              <button 
+                type="button"
+                className={`portal-card-btn ${isMember ? 'active' : ''}`}
+                onClick={() => handleOpenLogin('member')}
+                title="Page 2: Resident member login to check room, roommates, dues & pay via UPI"
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ 
+                    width: '38px', 
+                    height: '38px', 
+                    borderRadius: '10px', 
+                    background: isMember ? 'var(--accent-gold)' : 'rgba(20, 18, 16, 0.08)', 
+                    color: isMember ? '#141210' : '#141210', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    fontSize: '1.2rem',
+                    flexShrink: 0
+                  }}>
+                    🎓
+                  </div>
+                  <div>
+                    <div className="portal-card-title">2. Member Login</div>
+                    <div className="portal-card-desc">Student room, dues & UPI payment</div>
+                  </div>
+                </div>
+                {isMember ? (
+                  <span className="portal-active-pill">ACTIVE</span>
+                ) : (
+                  <span className="portal-switch-pill">Login</span>
+                )}
+              </button>
+
+              {/* Page 3: Public Shared Link */}
+              <button 
+                type="button"
+                className={`portal-card-btn ${!currentUser ? 'active' : ''}`}
+                onClick={() => {
+                  if (currentUser) handleLogout();
+                  setActiveTab('rooms');
+                }}
+                title="Page 3: Live hostel directory showing room occupants & Paid/Unpaid rent"
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ 
+                    width: '38px', 
+                    height: '38px', 
+                    borderRadius: '10px', 
+                    background: !currentUser ? 'var(--accent-gold)' : 'rgba(20, 18, 16, 0.08)', 
+                    color: !currentUser ? '#141210' : '#141210', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    fontSize: '1.2rem',
+                    flexShrink: 0
+                  }}>
+                    🌐
+                  </div>
+                  <div>
+                    <div className="portal-card-title">3. Public View (Paid/Unpaid)</div>
+                    <div className="portal-card-desc">Live room occupants & rent status</div>
+                  </div>
+                </div>
+                {!currentUser ? (
+                  <span className="portal-active-pill">ACTIVE</span>
+                ) : (
+                  <span className="portal-switch-pill">View Link</span>
+                )}
+              </button>
+            </div>
+          </div>
+
           {/* Hostel Member Resident Dashboard */}
           {isMember && activeTab === 'member_portal' && (
             <ResidentDashboard 

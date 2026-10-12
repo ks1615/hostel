@@ -61,7 +61,7 @@ export default function ResidentsList({
 
           {isOwner && (
             <button 
-              className="btn btn-primary btn-sm"
+              className="btn btn-gold btn-sm"
               onClick={() => onOpenCheckIn()}
             >
               <Plus size={16} />

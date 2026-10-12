@@ -78,21 +78,21 @@ export default function Sidebar({
       {!currentUser && (
         <div style={{ 
           marginTop: 'auto', 
-          background: 'rgba(99, 102, 241, 0.1)', 
-          border: '1px solid rgba(99, 102, 241, 0.25)', 
+          background: 'rgba(197, 160, 89, 0.08)', 
+          border: '1px solid rgba(197, 160, 89, 0.25)', 
           borderRadius: 'var(--radius-md)', 
           padding: '1rem',
           textAlign: 'center' 
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', color: 'var(--accent-primary)', fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', color: 'var(--accent-gold)', fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.35rem' }}>
             <ShieldAlert size={16} />
-            <span>Read-Only Mode</span>
+            <span>Read-Only Visitor</span>
           </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+          <p style={{ fontSize: '0.75rem', color: '#b8aea1', marginBottom: '0.75rem' }}>
             Only verified Owner can edit room and hostel details.
           </p>
           <button 
-            className="btn btn-primary btn-sm" 
+            className="btn btn-gold btn-sm" 
             style={{ width: '100%', fontSize: '0.8rem' }}
             onClick={onOpenLogin}
           >
@@ -107,7 +107,7 @@ export default function Sidebar({
         <div className="storage-widget">
           <div className="storage-header">
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <Database size={14} color="var(--accent-primary)" />
+              <Database size={14} color="var(--accent-gold)" />
               Database Health
             </span>
             <span>{stats.kb} KB</span>
@@ -115,7 +115,7 @@ export default function Sidebar({
           <div className="storage-bar">
             <div className="storage-fill" style={{ width: `${Math.max(5, stats.percent)}%` }}></div>
           </div>
-          <div style={{ fontSize: '0.725rem', color: 'var(--text-secondary)' }}>
+          <div style={{ fontSize: '0.725rem', color: '#b8aea1' }}>
             Admin edit access enabled.
           </div>
         </div>

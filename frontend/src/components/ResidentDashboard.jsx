@@ -72,7 +72,7 @@ export default function ResidentDashboard({
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Welcome Banner */}
       <div style={{ 
-        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(16, 185, 129, 0.2))', 
+        background: 'linear-gradient(135deg, rgba(20, 18, 16, 0.04), rgba(197, 160, 89, 0.12))', 
         border: '1px solid var(--border-highlight)', 
         borderRadius: 'var(--radius-lg)', 
         padding: '1.5rem 2rem', 

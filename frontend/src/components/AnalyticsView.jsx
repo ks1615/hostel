@@ -34,7 +34,7 @@ export default function AnalyticsView({ rooms, residents, payments }) {
     <div>
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1' }}>
+          <div className="stat-icon" style={{ background: 'rgba(20, 18, 16, 0.08)', color: 'var(--color-black)' }}>
             <TrendingUp size={24} />
           </div>
           <div className="stat-info">
@@ -44,7 +44,7 @@ export default function AnalyticsView({ rooms, residents, payments }) {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(197, 160, 89, 0.15)', color: '#8c6b2d' }}>
             <DollarSign size={24} />
           </div>
           <div className="stat-info">
@@ -58,7 +58,7 @@ export default function AnalyticsView({ rooms, residents, payments }) {
         {/* Block Occupancy Breakdown */}
         <div className="chart-card">
           <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Bed size={18} color="var(--accent-primary)" />
+            <Bed size={18} color="var(--accent-gold)" />
             Occupancy by Block
           </h3>
 
@@ -76,7 +76,7 @@ export default function AnalyticsView({ rooms, residents, payments }) {
                       className="progress-bar-fill"
                       style={{ 
                         width: `${pct}%`, 
-                        background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' 
+                        background: 'linear-gradient(90deg, #141210, #c5a059)' 
                       }}
                     />
                   </div>
@@ -89,7 +89,7 @@ export default function AnalyticsView({ rooms, residents, payments }) {
         {/* Room Type Distribution */}
         <div className="chart-card">
           <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <PieChart size={18} color="#10b981" />
+            <PieChart size={18} color="var(--accent-gold)" />
             Room Type Utilization
           </h3>
 
@@ -107,7 +107,7 @@ export default function AnalyticsView({ rooms, residents, payments }) {
                       className="progress-bar-fill"
                       style={{ 
                         width: `${pct}%`, 
-                        background: 'linear-gradient(90deg, #10b981, #3b82f6)' 
+                        background: 'linear-gradient(90deg, #c5a059, #dfc182)' 
                       }}
                     />
                   </div>
