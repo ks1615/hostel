@@ -477,49 +477,50 @@ export default function App() {
             />
           )}
 
-          {/* Owner Only Management Views */}
-          {isOwner && (
-            <>
-              {activeTab === 'residents' && (
-                <ResidentsList 
-                  residents={data.residents}
-                  rooms={data.rooms}
-                  searchTerm={searchTerm}
-                  onOpenCheckIn={() => setResidentModalState({ isOpen: true, preSelectedRoom: null, preSelectedBed: null, residentToEdit: null })}
-                  onEditResident={(res) => setResidentModalState({ isOpen: true, preSelectedRoom: null, preSelectedBed: null, residentToEdit: res })}
-                  onVacateResident={handleVacateBed}
-                  onRecordPayment={(res) => {
-                    setActiveTab('payments');
-                  }}
-                />
-              )}
+          {/* Residents Directory (Visible to everyone, edits owner-only) */}
+          {activeTab === 'residents' && (
+            <ResidentsList 
+              residents={data.residents}
+              rooms={data.rooms}
+              searchTerm={searchTerm}
+              onOpenCheckIn={() => setResidentModalState({ isOpen: true, preSelectedRoom: null, preSelectedBed: null, residentToEdit: null })}
+              onEditResident={(res) => setResidentModalState({ isOpen: true, preSelectedRoom: null, preSelectedBed: null, residentToEdit: res })}
+              onVacateResident={handleVacateBed}
+              onRecordPayment={(res) => {
+                setActiveTab('payments');
+              }}
+              isOwner={isOwner}
+            />
+          )}
 
-              {activeTab === 'maintenance' && (
-                <MaintenanceTracker 
-                  maintenance={data.maintenance}
-                  rooms={data.rooms}
-                  onSaveTicket={handleSaveTicket}
-                  onUpdateTicketStatus={handleUpdateTicketStatus}
-                />
-              )}
+          {/* Maintenance & Complaints (Visible to everyone, edits owner-only) */}
+          {activeTab === 'maintenance' && (
+            <MaintenanceTracker 
+              maintenance={data.maintenance}
+              rooms={data.rooms}
+              onSaveTicket={handleSaveTicket}
+              onUpdateTicketStatus={handleUpdateTicketStatus}
+              isOwner={isOwner}
+            />
+          )}
 
-              {activeTab === 'analytics' && (
-                <AnalyticsView 
-                  rooms={data.rooms}
-                  residents={data.residents}
-                  payments={data.payments}
-                />
-              )}
+          {/* Occupancy Analytics (Visible to everyone) */}
+          {activeTab === 'analytics' && (
+            <AnalyticsView 
+              rooms={data.rooms}
+              residents={data.residents}
+              payments={data.payments}
+            />
+          )}
 
-              {activeTab === 'storage' && (
-                <DataStorageManager 
-                  appData={data}
-                  onRestoreData={handleRestoreData}
-                  onResetData={handleResetData}
-                  showToast={showToast}
-                />
-              )}
-            </>
+          {/* Data Storage & Backup (Owner Only) */}
+          {isOwner && activeTab === 'storage' && (
+            <DataStorageManager 
+              appData={data}
+              onRestoreData={handleRestoreData}
+              onResetData={handleResetData}
+              showToast={showToast}
+            />
           )}
         </div>
       </main>

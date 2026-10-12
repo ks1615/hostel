@@ -5,7 +5,8 @@ export default function MaintenanceTracker({
   maintenance, 
   rooms, 
   onSaveTicket, 
-  onUpdateTicketStatus 
+  onUpdateTicketStatus,
+  isOwner = false 
 }) {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({
@@ -54,13 +55,15 @@ export default function MaintenanceTracker({
           <h3 style={{ fontSize: '1.1rem' }}>Maintenance & Repair Board</h3>
         </div>
 
-        <button 
-          className="btn btn-primary"
-          onClick={() => setShowModal(true)}
-        >
-          <Plus size={16} />
-          <span>Report Maintenance Issue</span>
-        </button>
+        {isOwner && (
+          <button 
+            className="btn btn-primary"
+            onClick={() => setShowModal(true)}
+          >
+            <Plus size={16} />
+            <span>Report Maintenance Issue</span>
+          </button>
+        )}
       </div>
 
       {/* Tickets List */}
@@ -123,16 +126,20 @@ export default function MaintenanceTracker({
                       </span>
                     </td>
                     <td>
-                      <select 
-                        className="select-custom" 
-                        style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
-                        value={ticket.status}
-                        onChange={(e) => onUpdateTicketStatus(ticket.id, e.target.value)}
-                      >
-                        <option value="Open">Open</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Resolved">Resolved</option>
-                      </select>
+                      {isOwner ? (
+                        <select 
+                          className="select-custom" 
+                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                          value={ticket.status}
+                          onChange={(e) => onUpdateTicketStatus(ticket.id, e.target.value)}
+                        >
+                          <option value="Open">Open</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Resolved">Resolved</option>
+                        </select>
+                      ) : (
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Managed</span>
+                      )}
                     </td>
                   </tr>
                 );

@@ -158,12 +158,8 @@ export default function RoomGrid({
             <IndianRupee size={24} />
           </div>
           <div className="stat-info">
-            <div className="stat-value">
-              {isOwner 
-                ? `₹${stats.totalMonthlyRevenue.toLocaleString()}` 
-                : `₹${(rooms.length > 0 ? Math.min(...rooms.map(r => r.rent || 6500)) : 6500).toLocaleString()}/mo`}
-            </div>
-            <div className="stat-label">{isOwner ? 'Monthly Expected Rent' : 'Rent Starting From'}</div>
+            <div className="stat-value">₹{stats.totalMonthlyRevenue.toLocaleString()}</div>
+            <div className="stat-label">Monthly Expected Rent</div>
           </div>
         </div>
       </div>

@@ -9,7 +9,8 @@ export default function ResidentsList({
   onOpenCheckIn, 
   onEditResident, 
   onVacateResident, 
-  onRecordPayment 
+  onRecordPayment,
+  isOwner = false 
 }) {
   const [rentFilter, setRentFilter] = useState('All');
 
@@ -58,13 +59,15 @@ export default function ResidentsList({
             <span>Export CSV</span>
           </button>
 
-          <button 
-            className="btn btn-primary btn-sm"
-            onClick={() => onOpenCheckIn()}
-          >
-            <Plus size={16} />
-            <span>New Resident</span>
-          </button>
+          {isOwner && (
+            <button 
+              className="btn btn-primary btn-sm"
+              onClick={() => onOpenCheckIn()}
+            >
+              <Plus size={16} />
+              <span>New Resident</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -151,21 +154,25 @@ export default function ResidentsList({
                           <CreditCard size={14} />
                           <span>Pay UPI</span>
                         </button>
-                        <button 
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => onEditResident(res)}
-                          title="Edit Resident Profile"
-                        >
-                          <Edit3 size={14} />
-                        </button>
-                        <button 
-                          className="btn btn-secondary btn-sm"
-                          style={{ color: 'var(--color-danger)' }}
-                          onClick={() => onVacateResident(res.roomId, res.bedNo, res.id)}
-                          title="Vacate Bed / Check Out"
-                        >
-                          <UserMinus size={14} />
-                        </button>
+                        {isOwner && (
+                          <>
+                            <button 
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => onEditResident(res)}
+                              title="Edit Resident Profile"
+                            >
+                              <Edit3 size={14} />
+                            </button>
+                            <button 
+                              className="btn btn-secondary btn-sm"
+                              style={{ color: 'var(--color-danger)' }}
+                              onClick={() => onVacateResident(res.roomId, res.bedNo, res.id)}
+                              title="Vacate Bed / Check Out"
+                            >
+                              <UserMinus size={14} />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

@@ -113,40 +113,29 @@ export default function RoomDetailModal({
                         </div>
                         <div>
                           <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>
-                            Bed {bedNo}: {isOwner ? resident.name : `${resident.name.split(' ')[0]} (Resident)`}
+                            Bed {bedNo}: {resident.name}
                           </div>
-                          {isOwner ? (
-                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', gap: '1rem', marginTop: '0.2rem' }}>
-                              <span><Phone size={12} style={{ display: 'inline', marginRight: '3px' }} /> {resident.phone}</span>
-                              <span><Calendar size={12} style={{ display: 'inline', marginRight: '3px' }} /> Checked-in: {resident.checkInDate}</span>
-                            </div>
-                          ) : (
-                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-                              <span>✓ Occupied Bed</span>
-                            </div>
-                          )}
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', gap: '1rem', marginTop: '0.2rem' }}>
+                            <span><Phone size={12} style={{ display: 'inline', marginRight: '3px' }} /> {resident.phone}</span>
+                            <span><Calendar size={12} style={{ display: 'inline', marginRight: '3px' }} /> Checked-in: {resident.checkInDate}</span>
+                          </div>
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span className={`badge ${resident.rentStatus === 'Paid' ? 'badge-available' : resident.rentStatus === 'Pending' ? 'badge-maintenance' : 'badge-full'}`}>
+                          {resident.rentStatus}
+                        </span>
                         {isOwner && (
-                          <>
-                            <span className={`badge ${resident.rentStatus === 'Paid' ? 'badge-available' : resident.rentStatus === 'Pending' ? 'badge-maintenance' : 'badge-full'}`}>
-                              {resident.rentStatus}
-                            </span>
-                            <button 
-                              className="btn btn-secondary btn-sm"
-                              style={{ color: 'var(--color-danger)' }}
-                              onClick={() => onVacateBed(room.id, bedNo, resident.id)}
-                              title="Check Out Resident"
-                            >
-                              <UserMinus size={14} />
-                              <span>Vacate</span>
-                            </button>
-                          </>
-                        )}
-                        {!isOwner && (
-                          <span className="badge badge-occupied">Occupied</span>
+                          <button 
+                            className="btn btn-secondary btn-sm"
+                            style={{ color: 'var(--color-danger)' }}
+                            onClick={() => onVacateBed(room.id, bedNo, resident.id)}
+                            title="Check Out Resident"
+                          >
+                            <UserMinus size={14} />
+                            <span>Vacate</span>
+                          </button>
                         )}
                       </div>
                     </>

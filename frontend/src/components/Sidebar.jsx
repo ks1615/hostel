@@ -39,9 +39,12 @@ export default function Sidebar({
   } else {
     // Public / Shared Link Visitor (Read-Only)
     navItems = [
-      { id: 'rooms', label: 'Rooms & Availability', icon: LayoutGrid, count: roomCount },
-      { id: 'notices', label: 'Hostel Notices & Rules', icon: Megaphone, count: noticeCount > 0 ? noticeCount : null },
-      { id: 'payments', label: 'UPI Rent & Payment Scanner', icon: CreditCard }
+      { id: 'rooms', label: 'Rooms & Floor Grid', icon: LayoutGrid, count: roomCount },
+      { id: 'residents', label: 'Residents Directory', icon: Users, count: residentCount },
+      { id: 'notices', label: 'Notices & Bulletins', icon: Megaphone, count: noticeCount > 0 ? noticeCount : null },
+      { id: 'payments', label: 'Fees & Rent Payments', icon: CreditCard, count: pendingPaymentsCount > 0 ? `${pendingPaymentsCount} Due` : null },
+      { id: 'maintenance', label: 'Maintenance & Complaints', icon: Wrench, count: openMaintenanceCount > 0 ? openMaintenanceCount : null },
+      { id: 'analytics', label: 'Occupancy Analytics', icon: BarChart3 }
     ];
   }
 
