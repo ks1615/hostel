@@ -9,7 +9,8 @@ export default function RoomDetailModal({
   onCheckInResident, 
   onOpenMaintenance,
   onEditRoom,
-  onDeleteRoom
+  onDeleteRoom,
+  isOwner = false
 }) {
   if (!room) return null;
 
@@ -112,28 +113,41 @@ export default function RoomDetailModal({
                         </div>
                         <div>
                           <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>
-                            Bed {bedNo}: {resident.name}
+                            Bed {bedNo}: {isOwner ? resident.name : `${resident.name.split(' ')[0]} (Resident)`}
                           </div>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', gap: '1rem', marginTop: '0.2rem' }}>
-                            <span><Phone size={12} style={{ display: 'inline', marginRight: '3px' }} /> {resident.phone}</span>
-                            <span><Calendar size={12} style={{ display: 'inline', marginRight: '3px' }} /> Checked-in: {resident.checkInDate}</span>
-                          </div>
+                          {isOwner ? (
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', gap: '1rem', marginTop: '0.2rem' }}>
+                              <span><Phone size={12} style={{ display: 'inline', marginRight: '3px' }} /> {resident.phone}</span>
+                              <span><Calendar size={12} style={{ display: 'inline', marginRight: '3px' }} /> Checked-in: {resident.checkInDate}</span>
+                            </div>
+                          ) : (
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                              <span>✓ Occupied Bed</span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span className={`badge ${resident.rentStatus === 'Paid' ? 'badge-available' : resident.rentStatus === 'Pending' ? 'badge-maintenance' : 'badge-full'}`}>
-                          {resident.rentStatus}
-                        </span>
-                        <button 
-                          className="btn btn-secondary btn-sm"
-                          style={{ color: 'var(--color-danger)' }}
-                          onClick={() => onVacateBed(room.id, bedNo, resident.id)}
-                          title="Check Out Resident"
-                        >
-                          <UserMinus size={14} />
-                          <span>Vacate</span>
-                        </button>
+                        {isOwner && (
+                          <>
+                            <span className={`badge ${resident.rentStatus === 'Paid' ? 'badge-available' : resident.rentStatus === 'Pending' ? 'badge-maintenance' : 'badge-full'}`}>
+                              {resident.rentStatus}
+                            </span>
+                            <button 
+                              className="btn btn-secondary btn-sm"
+                              style={{ color: 'var(--color-danger)' }}
+                              onClick={() => onVacateBed(room.id, bedNo, resident.id)}
+                              title="Check Out Resident"
+                            >
+                              <UserMinus size={14} />
+                              <span>Vacate</span>
+                            </button>
+                          </>
+                        )}
+                        {!isOwner && (
+                          <span className="badge badge-occupied">Occupied</span>
+                        )}
                       </div>
                     </>
                   ) : (
@@ -142,16 +156,18 @@ export default function RoomDetailModal({
                         <Bed size={20} />
                         <span style={{ fontWeight: 600 }}>Bed {bedNo}: Available for Booking</span>
                       </div>
-                      <button 
-                        className="btn btn-primary btn-sm"
-                        onClick={() => {
-                          onClose();
-                          onCheckInResident(room, bedNo);
-                        }}
-                      >
-                        <UserPlus size={14} />
-                        <span>Allocate</span>
-                      </button>
+                      {isOwner && (
+                        <button 
+                          className="btn btn-primary btn-sm"
+                          onClick={() => {
+                            onClose();
+                            onCheckInResident(room, bedNo);
+                          }}
+                        >
+                          <UserPlus size={14} />
+                          <span>Allocate</span>
+                        </button>
+                      )}
                     </>
                   )}
                 </div>
@@ -161,41 +177,45 @@ export default function RoomDetailModal({
         </div>
 
         <div className="modal-footer">
-          <button 
-            className="btn btn-secondary"
-            onClick={() => {
-              onClose();
-              if (onEditRoom) onEditRoom(room);
-            }}
-          >
-            <Edit3 size={16} />
-            <span>Edit Room Details</span>
-          </button>
+          {isOwner && (
+            <>
+              <button 
+                className="btn btn-secondary"
+                onClick={() => {
+                  onClose();
+                  if (onEditRoom) onEditRoom(room);
+                }}
+              >
+                <Edit3 size={16} />
+                <span>Edit Room Details</span>
+              </button>
 
-          <button 
-            className="btn btn-secondary"
-            style={{ color: 'var(--color-danger)' }}
-            onClick={() => {
-              if (window.confirm(`Are you sure you want to DELETE Room ${room.number} (${room.block})?`)) {
-                onClose();
-                if (onDeleteRoom) onDeleteRoom(room.id);
-              }
-            }}
-          >
-            <Trash2 size={16} />
-            <span>Delete Room</span>
-          </button>
+              <button 
+                className="btn btn-secondary"
+                style={{ color: 'var(--color-danger)' }}
+                onClick={() => {
+                  if (window.confirm(`Are you sure you want to DELETE Room ${room.number} (${room.block})?`)) {
+                    onClose();
+                    if (onDeleteRoom) onDeleteRoom(room.id);
+                  }
+                }}
+              >
+                <Trash2 size={16} />
+                <span>Delete Room</span>
+              </button>
 
-          <button 
-            className="btn btn-secondary"
-            onClick={() => {
-              onClose();
-              onOpenMaintenance(room);
-            }}
-          >
-            <Wrench size={16} />
-            <span>Report Maintenance</span>
-          </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={() => {
+                  onClose();
+                  onOpenMaintenance(room);
+                }}
+              >
+                <Wrench size={16} />
+                <span>Report Maintenance</span>
+              </button>
+            </>
+          )}
 
           <button className="btn btn-primary" onClick={onClose}>
             Close

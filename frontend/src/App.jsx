@@ -24,13 +24,13 @@ export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('STARLIGHT_THEME') || 'dark');
   const [toast, setToast] = useState(null);
 
-  // Authentication State
+  // Authentication State: Null by default so shared links open in Public Read-Only Visitor mode
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('SAKHARE_CURRENT_USER');
-      return saved ? JSON.parse(saved) : { role: 'owner', name: 'Owner (Sakhare Plot Management)' };
+      return saved ? JSON.parse(saved) : null;
     } catch {
-      return { role: 'owner', name: 'Owner (Sakhare Plot Management)' };
+      return null;
     }
   });
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -45,7 +45,7 @@ export default function App() {
     residentToEdit: null 
   });
 
-  // Sync dataset changes to localStorage
+  // Sync dataset changes to localStorage (Only owner edits save mutations)
   useEffect(() => {
     saveData(data);
   }, [data]);
@@ -77,13 +77,18 @@ export default function App() {
   const handleLogin = (userObj) => {
     setCurrentUser(userObj);
     setShowLoginModal(false);
+    if (userObj.role === 'member') {
+      setActiveTab('member_portal');
+    } else {
+      setActiveTab('rooms');
+    }
     showToast(`Logged in successfully as ${userObj.name}!`);
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
-    setShowLoginModal(true);
-    showToast('Logged out.');
+    setActiveTab('rooms');
+    showToast('Logged out. Switched to Public Read-Only Visitor mode.');
   };
 
   // Hidden File input trigger for header
@@ -116,14 +121,18 @@ export default function App() {
     e.target.value = '';
   };
 
-  // Data operations: Rooms
+  // Data operations: Rooms (Owner only)
   const handleSaveRoom = (roomData) => {
+    if (currentUser?.role !== 'owner') {
+      alert('Only the owner can add or edit rooms.');
+      return;
+    }
+
     setData(prev => {
       const existsIndex = prev.rooms.findIndex(r => r.id === roomData.id);
       let updatedRooms = [...prev.rooms];
 
       if (existsIndex >= 0) {
-        // Keep existing beds occupant references if capacity unchanged
         const existingBeds = prev.rooms[existsIndex].beds || [];
         const newBeds = Array.from({ length: roomData.capacity }, (_, i) => {
           const bedNo = i + 1;
@@ -133,7 +142,6 @@ export default function App() {
 
         updatedRooms[existsIndex] = { ...roomData, beds: newBeds };
       } else {
-        // New room: initialize empty beds
         const newBeds = Array.from({ length: roomData.capacity }, (_, i) => ({
           bedNo: i + 1,
           residentId: null
@@ -149,6 +157,11 @@ export default function App() {
   };
 
   const handleDeleteRoom = (roomId) => {
+    if (currentUser?.role !== 'owner') {
+      alert('Only the owner can delete rooms.');
+      return;
+    }
+
     setData(prev => {
       const updatedRooms = prev.rooms.filter(r => r.id !== roomId);
       const updatedResidents = prev.residents.filter(r => r.roomId !== roomId);
@@ -167,8 +180,13 @@ export default function App() {
     showToast(`Room deleted successfully.`);
   };
 
-  // Residents
+  // Residents (Owner only)
   const handleSaveResident = (residentData) => {
+    if (currentUser?.role !== 'owner') {
+      alert('Only the owner can register or edit residents.');
+      return;
+    }
+
     setData(prev => {
       let updatedResidents = [...prev.residents];
       const resIndex = updatedResidents.findIndex(r => r.id === residentData.id);
@@ -179,7 +197,6 @@ export default function App() {
         updatedResidents.push(residentData);
       }
 
-      // Update room bed allocation
       const updatedRooms = prev.rooms.map(room => {
         if (room.id === residentData.roomId) {
           const updatedBeds = room.beds.map(bed => {
@@ -207,6 +224,11 @@ export default function App() {
   };
 
   const handleVacateBed = (roomId, bedNo, residentId) => {
+    if (currentUser?.role !== 'owner') {
+      alert('Only the owner can vacate resident beds.');
+      return;
+    }
+
     setData(prev => {
       const updatedRooms = prev.rooms.map(room => {
         if (room.id === roomId) {
@@ -246,7 +268,6 @@ export default function App() {
   const handleSavePayment = (paymentData) => {
     setData(prev => {
       const updatedPayments = [paymentData, ...prev.payments];
-      // Update resident status to Paid
       const updatedResidents = prev.residents.map(r => {
         if (r.id === paymentData.residentId) {
           return { ...r, rentStatus: 'Paid' };
@@ -274,6 +295,11 @@ export default function App() {
   };
 
   const handleUpdateTicketStatus = (ticketId, newStatus) => {
+    if (currentUser?.role !== 'owner') {
+      alert('Only the owner can update maintenance ticket statuses.');
+      return;
+    }
+
     setData(prev => ({
       ...prev,
       maintenance: prev.maintenance.map(m => m.id === ticketId ? { ...m, status: newStatus } : m)
@@ -283,6 +309,11 @@ export default function App() {
 
   // Notices
   const handleSaveNotice = (noticeData) => {
+    if (currentUser?.role !== 'owner') {
+      alert('Only the owner can publish notices.');
+      return;
+    }
+
     setData(prev => {
       const idx = (prev.notices || []).findIndex(n => n.id === noticeData.id);
       let updatedNotices = [...(prev.notices || [])];
@@ -297,6 +328,11 @@ export default function App() {
   };
 
   const handleDeleteNotice = (noticeId) => {
+    if (currentUser?.role !== 'owner') {
+      alert('Only the owner can delete notices.');
+      return;
+    }
+
     setData(prev => ({
       ...prev,
       notices: (prev.notices || []).filter(n => n.id !== noticeId)
@@ -305,6 +341,8 @@ export default function App() {
   };
 
   const handleTogglePinNotice = (noticeId) => {
+    if (currentUser?.role !== 'owner') return;
+
     setData(prev => ({
       ...prev,
       notices: (prev.notices || []).map(n => n.id === noticeId ? { ...n, isPinned: !n.isPinned } : n)
@@ -331,7 +369,7 @@ export default function App() {
     }
   };
 
-  // Computations for sidebar badge counts
+  // Computations for badge counts
   const pendingPaymentsCount = data.residents.filter(r => r.rentStatus !== 'Paid').length;
   const openMaintenanceCount = data.maintenance.filter(m => m.status !== 'Resolved').length;
   const noticeCount = (data.notices || []).length;
@@ -350,6 +388,7 @@ export default function App() {
       />
 
       <Sidebar 
+        currentUser={currentUser}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         roomCount={data.rooms.length}
@@ -357,6 +396,7 @@ export default function App() {
         pendingPaymentsCount={pendingPaymentsCount}
         openMaintenanceCount={openMaintenanceCount}
         noticeCount={noticeCount}
+        onOpenLogin={() => setShowLoginModal(true)}
       />
 
       <main className="main-content">
@@ -377,8 +417,8 @@ export default function App() {
         />
 
         <div className="page-wrapper">
-          {/* Hostel Member View */}
-          {isMember && (
+          {/* Hostel Member Resident Dashboard */}
+          {isMember && activeTab === 'member_portal' && (
             <ResidentDashboard 
               currentUser={currentUser}
               rooms={data.rooms}
@@ -393,37 +433,53 @@ export default function App() {
             />
           )}
 
-          {/* Owner / Admin View Tabs */}
+          {/* Rooms View (Visible to Everyone: Owner, Member, Public Visitor) */}
+          {activeTab === 'rooms' && (
+            <RoomGrid 
+              rooms={data.rooms}
+              residents={data.residents}
+              searchTerm={searchTerm}
+              onViewRoom={(room) => setSelectedRoomForView(room)}
+              onCheckInResident={(room, bedNo) => {
+                setResidentModalState({
+                  isOpen: true,
+                  preSelectedRoom: room,
+                  preSelectedBed: bedNo || null,
+                  residentToEdit: null
+                });
+              }}
+              onEditRoom={(room) => setRoomFormModalState({ isOpen: true, roomToEdit: room })}
+              onDeleteRoom={handleDeleteRoom}
+              isOwner={isOwner}
+            />
+          )}
+
+          {/* Notices View (Visible to Everyone, but only Owner can add/edit/delete) */}
+          {activeTab === 'notices' && (
+            <NoticeBoard 
+              notices={data.notices || []}
+              onSaveNotice={handleSaveNotice}
+              onDeleteNotice={handleDeleteNotice}
+              onTogglePinNotice={handleTogglePinNotice}
+              isOwner={isOwner}
+            />
+          )}
+
+          {/* Payments & UPI Scanner View */}
+          {activeTab === 'payments' && (
+            <PaymentsTracker 
+              payments={data.payments}
+              residents={data.residents}
+              upiConfig={data.upiConfig}
+              onSavePayment={handleSavePayment}
+              showToast={showToast}
+              isOwner={isOwner}
+            />
+          )}
+
+          {/* Owner Only Management Views */}
           {isOwner && (
             <>
-              {activeTab === 'rooms' && (
-                <RoomGrid 
-                  rooms={data.rooms}
-                  residents={data.residents}
-                  searchTerm={searchTerm}
-                  onViewRoom={(room) => setSelectedRoomForView(room)}
-                  onCheckInResident={(room, bedNo) => {
-                    setResidentModalState({
-                      isOpen: true,
-                      preSelectedRoom: room,
-                      preSelectedBed: bedNo || null,
-                      residentToEdit: null
-                    });
-                  }}
-                  onEditRoom={(room) => setRoomFormModalState({ isOpen: true, roomToEdit: room })}
-                  onDeleteRoom={handleDeleteRoom}
-                />
-              )}
-
-              {activeTab === 'notices' && (
-                <NoticeBoard 
-                  notices={data.notices || []}
-                  onSaveNotice={handleSaveNotice}
-                  onDeleteNotice={handleDeleteNotice}
-                  onTogglePinNotice={handleTogglePinNotice}
-                />
-              )}
-
               {activeTab === 'residents' && (
                 <ResidentsList 
                   residents={data.residents}
@@ -435,16 +491,6 @@ export default function App() {
                   onRecordPayment={(res) => {
                     setActiveTab('payments');
                   }}
-                />
-              )}
-
-              {activeTab === 'payments' && (
-                <PaymentsTracker 
-                  payments={data.payments}
-                  residents={data.residents}
-                  upiConfig={data.upiConfig}
-                  onSavePayment={handleSavePayment}
-                  showToast={showToast}
                 />
               )}
 
@@ -478,16 +524,16 @@ export default function App() {
         </div>
       </main>
 
-      {/* Login Modal */}
-      {(showLoginModal || !currentUser) && (
+      {/* Login Modal (Only opens when user clicks Login) */}
+      {showLoginModal && (
         <LoginModal 
           residents={data.residents}
           onLogin={handleLogin}
-          onClose={currentUser ? () => setShowLoginModal(false) : null}
+          onClose={() => setShowLoginModal(false)}
         />
       )}
 
-      {/* Modals */}
+      {/* Room Detail Modal (Read-only for visitors, full actions for owner) */}
       {selectedRoomForView && (
         <RoomDetailModal 
           room={selectedRoomForView}
@@ -507,10 +553,12 @@ export default function App() {
           }}
           onEditRoom={(room) => setRoomFormModalState({ isOpen: true, roomToEdit: room })}
           onDeleteRoom={handleDeleteRoom}
+          isOwner={isOwner}
         />
       )}
 
-      {roomFormModalState.isOpen && (
+      {/* Owner-Only Modals */}
+      {isOwner && roomFormModalState.isOpen && (
         <RoomFormModal 
           roomToEdit={roomFormModalState.roomToEdit}
           onClose={() => setRoomFormModalState({ isOpen: false, roomToEdit: null })}
@@ -519,7 +567,7 @@ export default function App() {
         />
       )}
 
-      {residentModalState.isOpen && (
+      {isOwner && residentModalState.isOpen && (
         <ResidentModal 
           rooms={data.rooms}
           preSelectedRoom={residentModalState.preSelectedRoom}

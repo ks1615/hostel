@@ -7,7 +7,8 @@ export default function PaymentsTracker({
   residents, 
   upiConfig,
   onSavePayment,
-  showToast 
+  showToast,
+  isOwner = false 
 }) {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [upiModalResident, setUpiModalResident] = useState(null);
@@ -135,28 +136,93 @@ export default function PaymentsTracker({
         )}
       </div>
 
-      {/* Control bar */}
-      <div className="filter-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <CreditCard size={20} style={{ color: 'var(--accent-primary)' }} />
-          <h3 style={{ fontSize: '1.1rem' }}>Payment Transactions Log</h3>
-        </div>
+      {!isOwner ? (
+        /* Public Visitor UPI Payment Card */
+        <div style={{ 
+          background: 'var(--bg-card)', 
+          border: '1px solid var(--border-color)', 
+          borderRadius: 'var(--radius-lg)', 
+          padding: '2rem',
+          textAlign: 'center',
+          maxWidth: '560px',
+          margin: '0 auto' 
+        }}>
+          <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '0.35rem', color: 'var(--text-primary)' }}>
+            Sakhare Plot Hostel Fee Payment
+          </h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+            Scan the official QR code below using any UPI App (PhonePe, GPay, Paytm, BHIM) to pay hostel rent or deposit.
+          </p>
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button 
-            className="btn btn-primary"
-            onClick={() => setShowPaymentModal(true)}
-          >
-            <Plus size={16} />
-            <span>Record Rent Payment</span>
-          </button>
-        </div>
-      </div>
+          <div style={{ 
+            background: '#ffffff', 
+            padding: '1.25rem', 
+            borderRadius: '16px', 
+            display: 'inline-block',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+            border: '4px solid #6366f1',
+            marginBottom: '1.25rem'
+          }}>
+            <img 
+              src="/sakhare-upi-qr.jpg" 
+              alt="Sakhare Plot Hostel PhonePe Scanner" 
+              style={{ width: '220px', height: 'auto', display: 'block', borderRadius: '8px' }}
+            />
+            <div style={{ marginTop: '0.5rem', color: '#111827', fontSize: '0.85rem', fontWeight: 800 }}>
+              PHONEPE OFFICIAL SCANNER
+            </div>
+          </div>
 
-      {/* Payment Records Table */}
-      <div className="table-container">
-        <table className="custom-table">
-          <thead>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            gap: '0.5rem', 
+            marginBottom: '1.5rem',
+            background: 'var(--bg-surface)',
+            padding: '0.6rem 1.25rem',
+            borderRadius: 'var(--radius-full)',
+            border: '1px solid var(--border-highlight)'
+          }}>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>UPI ID:</span>
+            <strong style={{ fontSize: '1rem', color: 'var(--accent-primary)', fontFamily: 'monospace' }}>
+              {upiConfig?.upiId || 'sakhareplot@upi'}
+            </strong>
+          </div>
+
+          <div style={{ textAlign: 'left', background: 'var(--bg-surface)', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', fontSize: '0.825rem', color: 'var(--text-secondary)' }}>
+            <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.35rem' }}>Payment Instructions:</strong>
+            <p>1. Open Google Pay, PhonePe, Paytm, or BHIM.</p>
+            <p>2. Scan this QR code or pay to UPI ID <code style={{ color: 'var(--accent-primary)' }}>{upiConfig?.upiId || 'sakhareplot@upi'}</code>.</p>
+            <p>3. Enter your Room Number and Resident Name in payment remarks.</p>
+            <p>4. Send payment receipt screenshot to the hostel manager.</p>
+          </div>
+        </div>
+      ) : (
+        /* Owner Admin View */
+        <>
+          {/* Control bar */}
+          <div className="filter-bar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <CreditCard size={20} style={{ color: 'var(--accent-primary)' }} />
+              <h3 style={{ fontSize: '1.1rem' }}>Payment Transactions Log (Owner View)</h3>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button 
+                className="btn btn-primary"
+                onClick={() => setShowPaymentModal(true)}
+              >
+                <Plus size={16} />
+                <span>Record Rent Payment</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Payment Records Table */}
+          <div className="table-container">
+            <table className="custom-table">
+              <thead>
             <tr>
               <th>Receipt #</th>
               <th>Resident Name</th>
@@ -327,6 +393,8 @@ export default function PaymentsTracker({
             </form>
           </div>
         </div>
+      )}
+        </>
       )}
 
       {/* UPI QR Payment Modal */}

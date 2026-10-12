@@ -5,7 +5,8 @@ export default function NoticeBoard({
   notices, 
   onSaveNotice, 
   onDeleteNotice, 
-  onTogglePinNotice 
+  onTogglePinNotice,
+  isOwner = false 
 }) {
   const [showModal, setShowModal] = useState(false);
   const [editingNotice, setEditingNotice] = useState(null);
@@ -105,13 +106,15 @@ export default function NoticeBoard({
             <option value="Rules">Rules</option>
           </select>
 
-          <button 
-            className="btn btn-primary"
-            onClick={handleOpenAdd}
-          >
-            <Plus size={16} />
-            <span>Post New Notice</span>
-          </button>
+          {isOwner && (
+            <button 
+              className="btn btn-primary"
+              onClick={handleOpenAdd}
+            >
+              <Plus size={16} />
+              <span>Post New Notice</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -127,7 +130,7 @@ export default function NoticeBoard({
           <Bell size={48} color="var(--text-muted)" style={{ marginBottom: '1rem' }} />
           <h3>No Announcements Posted</h3>
           <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-            Click "Post New Notice" to issue a hostel announcement or reminder.
+            {isOwner ? 'Click "Post New Notice" to issue a hostel announcement.' : 'No announcements currently active.'}
           </p>
         </div>
       ) : (
@@ -166,31 +169,33 @@ export default function NoticeBoard({
                     {notice.category}
                   </span>
 
-                  <div style={{ display: 'flex', gap: '0.35rem' }}>
-                    <button 
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => onTogglePinNotice(notice.id)}
-                      title={notice.isPinned ? 'Unpin Notice' : 'Pin Notice to Top'}
-                      style={{ color: notice.isPinned ? 'var(--accent-primary)' : 'var(--text-muted)' }}
-                    >
-                      <Pin size={14} />
-                    </button>
-                    <button 
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => handleOpenEdit(notice)}
-                      title="Edit Notice"
-                    >
-                      <Edit3 size={14} />
-                    </button>
-                    <button 
-                      className="btn btn-secondary btn-sm"
-                      style={{ color: 'var(--color-danger)' }}
-                      onClick={() => handleDelete(notice.id, notice.title)}
-                      title="Delete Notice"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
+                  {isOwner && (
+                    <div style={{ display: 'flex', gap: '0.35rem' }}>
+                      <button 
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => onTogglePinNotice(notice.id)}
+                        title={notice.isPinned ? 'Unpin Notice' : 'Pin Notice to Top'}
+                        style={{ color: notice.isPinned ? 'var(--accent-primary)' : 'var(--text-muted)' }}
+                      >
+                        <Pin size={14} />
+                      </button>
+                      <button 
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => handleOpenEdit(notice)}
+                        title="Edit Notice"
+                      >
+                        <Edit3 size={14} />
+                      </button>
+                      <button 
+                        className="btn btn-secondary btn-sm"
+                        style={{ color: 'var(--color-danger)' }}
+                        onClick={() => handleDelete(notice.id, notice.title)}
+                        title="Delete Notice"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Title & Body */}

@@ -23,7 +23,8 @@ export default function RoomGrid({
   onViewRoom, 
   onCheckInResident, 
   onEditRoom,
-  onDeleteRoom 
+  onDeleteRoom,
+  isOwner = false
 }) {
   const [selectedBlock, setSelectedBlock] = useState('All');
   const [selectedFloor, setSelectedFloor] = useState('All');
@@ -98,6 +99,28 @@ export default function RoomGrid({
 
   return (
     <div>
+      {!isOwner && (
+        <div style={{ 
+          background: 'rgba(99, 102, 241, 0.1)', 
+          border: '1px solid var(--border-highlight)', 
+          borderRadius: 'var(--radius-md)', 
+          padding: '0.85rem 1.25rem', 
+          marginBottom: '1.25rem', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.5rem'
+        }}>
+          <div>
+            <strong style={{ color: 'var(--accent-primary)' }}>👀 Public Visitor Mode (Read-Only)</strong>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>
+              You are viewing Sakhare Plot Hostel room details and availability. Login as Owner to edit or delete data.
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Top Banner Stats */}
       <div className="stats-grid">
         <div className="stat-card">
@@ -135,8 +158,12 @@ export default function RoomGrid({
             <IndianRupee size={24} />
           </div>
           <div className="stat-info">
-            <div className="stat-value">₹{stats.totalMonthlyRevenue.toLocaleString()}</div>
-            <div className="stat-label">Monthly Expected Rent</div>
+            <div className="stat-value">
+              {isOwner 
+                ? `₹${stats.totalMonthlyRevenue.toLocaleString()}` 
+                : `₹${(rooms.length > 0 ? Math.min(...rooms.map(r => r.rent || 6500)) : 6500).toLocaleString()}/mo`}
+            </div>
+            <div className="stat-label">{isOwner ? 'Monthly Expected Rent' : 'Rent Starting From'}</div>
           </div>
         </div>
       </div>
@@ -286,37 +313,41 @@ export default function RoomGrid({
                       <Eye size={14} />
                     </button>
 
-                    {!isFull && room.status !== 'Maintenance' && (
-                      <button 
-                        className="btn btn-primary btn-sm"
-                        onClick={() => onCheckInResident(room)}
-                        title="Allocate Bed"
-                      >
-                        <UserPlus size={14} />
-                        <span>Book</span>
-                      </button>
+                    {isOwner && (
+                      <>
+                        {!isFull && room.status !== 'Maintenance' && (
+                          <button 
+                            className="btn btn-primary btn-sm"
+                            onClick={() => onCheckInResident(room)}
+                            title="Allocate Bed"
+                          >
+                            <UserPlus size={14} />
+                            <span>Book</span>
+                          </button>
+                        )}
+
+                        <button 
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => onEditRoom(room)}
+                          title="Edit Room Details"
+                        >
+                          <Edit3 size={14} />
+                        </button>
+
+                        <button 
+                          className="btn btn-secondary btn-sm"
+                          style={{ color: 'var(--color-danger)' }}
+                          onClick={() => {
+                            if (window.confirm(`Are you sure you want to DELETE Room ${room.number} (${room.block})? This action cannot be undone.`)) {
+                              onDeleteRoom(room.id);
+                            }
+                          }}
+                          title="Delete Room"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </>
                     )}
-
-                    <button 
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => onEditRoom(room)}
-                      title="Edit Room Details"
-                    >
-                      <Edit3 size={14} />
-                    </button>
-
-                    <button 
-                      className="btn btn-secondary btn-sm"
-                      style={{ color: 'var(--color-danger)' }}
-                      onClick={() => {
-                        if (window.confirm(`Are you sure you want to DELETE Room ${room.number} (${room.block})? This action cannot be undone.`)) {
-                          onDeleteRoom(room.id);
-                        }
-                      }}
-                      title="Delete Room"
-                    >
-                      <Trash2 size={14} />
-                    </button>
                   </div>
                 </div>
               </div>

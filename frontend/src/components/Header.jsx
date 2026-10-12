@@ -24,7 +24,7 @@ export default function Header({
         <div>
           <h1 className="brand-title">Sakhare Plot Hostel</h1>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            {isOwner ? '👑 Owner Admin Management' : '🎓 Hostel Resident Portal'}
+            {isOwner ? '👑 Owner Admin Management' : currentUser?.role === 'member' ? '🎓 Hostel Resident Portal' : '🌐 Public Visitor Portal (Read-Only)'}
           </span>
         </div>
       </div>
